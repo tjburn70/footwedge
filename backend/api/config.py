@@ -1,4 +1,15 @@
+from datetime import timedelta
+
+ACCESS_EXPIRES = timedelta(seconds=300)
+REFRESH_EXPIRES = timedelta(days=30)
+
+
 class FlaskConfig:
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:V!llageMD@localhost/all-square'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     APP_NAME = 'all-square'
+    JWT_SECRET_KEY = 'ED696FE6797CE3AB066F3C7CBE8D0A59D72A422BF718E0565453BFA494D74589'
+    JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
+    JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = ['refresh']

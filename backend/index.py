@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_jwt_extended import JWTManager
 
 from backend.api import config, routes, version_info
 
@@ -16,6 +17,7 @@ def create_app(app_settings):
 app = create_app(config.FlaskConfig)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+jwt = JWTManager(app)
 
 
 @app.route('/api')
