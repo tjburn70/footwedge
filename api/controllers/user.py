@@ -14,10 +14,10 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
 )
 
-from backend.api.config import REFRESH_EXPIRES
-from backend.api.controllers import auth
-from backend.api.models.user import User
-from backend.api.helpers import (
+from api.config import REFRESH_EXPIRES
+from api.controllers import auth
+from api.models import User
+from api.helpers import (
     requires_json_content,
     throws_500_on_exception,
 )

@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
 
-from backend.api import config, routes, version_info
+from api import version_info
+from api import routes, config
 
 
 def create_app(app_settings):

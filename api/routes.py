@@ -1,6 +1,6 @@
 import logging
 
-from backend.api.controllers import (
+from api.controllers import (
     auth,
     health,
     user,
