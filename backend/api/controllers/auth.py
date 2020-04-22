@@ -12,7 +12,7 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
 )
 
-from backend.index import jwt
+from backend.api.index import jwt
 
 BLACKLISTED_TOKEN_FLAG = '1'
 ACTIVE_TOKEN_FLAG = '0'

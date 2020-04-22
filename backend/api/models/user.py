@@ -5,7 +5,7 @@ from werkzeug.security import (
     check_password_hash,
 )
 
-from backend.index import db
+from backend.api.index import db
 
 # TODO enum for roles - admin, standard_user, premium_user
 
