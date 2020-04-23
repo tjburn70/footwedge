@@ -7,12 +7,11 @@ from flask import (
     make_response
 )
 from flask_jwt_extended import (
+    JWTManager,
     create_access_token,
     get_jwt_identity,
     jwt_refresh_token_required,
 )
-
-from api.index import jwt
 
 BLACKLISTED_TOKEN_FLAG = '1'
 ACTIVE_TOKEN_FLAG = '0'
@@ -23,6 +22,7 @@ redis_client = redis.StrictRedis.from_url(
     decode_responses=True
 )
 blueprint = Blueprint('auth', __name__)
+jwt = JWTManager()
 
 
 # callback to check if JWT has been revoked; accepts decoded JWT python dict
