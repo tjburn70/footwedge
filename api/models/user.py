@@ -4,8 +4,7 @@ from werkzeug.security import (
     generate_password_hash,
     check_password_hash,
 )
-
-from api.index import db
+from . import db
 
 # TODO enum for roles - admin, standard_user, premium_user
 
