@@ -9,9 +9,9 @@ from api.controllers import (
 logger = logging.getLogger(__name__)
 
 ROUTES = {
-    'api/auth': auth.blueprint,
-    'api/health': health.blueprint,
-    'api/user': user.blueprint,
+    '/api/auth': auth.blueprint,
+    '/api/health': health.blueprint,
+    '/api/user': user.blueprint,
 }
 
 
