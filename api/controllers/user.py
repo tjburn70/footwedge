@@ -34,7 +34,7 @@ def register_user():
     email = request_body.get('email')
     password = request_body.get('password')
 
-    if not email and not password:
+    if not email or not password:
         error_message = "Missing required parameters: 'email' and/or 'password'"
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
@@ -78,7 +78,7 @@ def login():
     email = request_body.get('email')
     password = request_body.get('password')
 
-    if not email and not password:
+    if not email or not password:
         error_message = "Missing required parameters: email and/or password"
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
