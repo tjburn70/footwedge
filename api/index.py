@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 from api import version_info
 from api import routes, config
@@ -18,6 +19,7 @@ def create_app(app_settings):
 
 
 app = create_app(config.FlaskConfig)
+CORS(app)
 migrate = Migrate(app, db)
 
 
