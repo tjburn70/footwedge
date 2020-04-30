@@ -3,9 +3,9 @@ FROM python:3.6.10-stretch
 RUN apt-get update -y && \
     apt-get install -y python-pip python-dev
 
-COPY . /app
+WORKDIR /usr/local
 
-WORKDIR /app
+COPY . .
 
 RUN pip install -r ./requirements.txt
 
