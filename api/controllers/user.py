@@ -85,24 +85,28 @@ def login():
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    access_token = create_access_token(identity=email)
-    refresh_token = create_refresh_token(identity=email)
-    refresh_jti = get_jti(encoded_token=refresh_token)
-    auth.redis_client.set(
-        name=refresh_jti,
-        value=auth.ACTIVE_TOKEN_FLAG,
-        ex=REFRESH_EXPIRES
-    )
-
-    response_body = {
-        "status": "success",
-        "message": "user is logged in",
-        "user_id": current_user.id,
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-    }
-
-    return make_response(jsonify(response_body), HTTPStatus.OK.value)
+    valid_password = current_user.verify_password(password)
+    if valid_password:
+        access_token = create_access_token(identity=email)
+        refresh_token = create_refresh_token(identity=email)
+        refresh_jti = get_jti(encoded_token=refresh_token)
+        auth.redis_client.set(
+            name=refresh_jti,
+            value=auth.ACTIVE_TOKEN_FLAG,
+            ex=REFRESH_EXPIRES
+        )
+        response_body = {
+            "status": "success",
+            "message": "user is logged in",
+            "user_id": current_user.id,
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+        }
+        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+    else:
+        error_message = f"Invalid password for email: {email}"
+        response_body = {"message": error_message}
+        return make_response(jsonify(response_body), HTTPStatus.UNAUTHORIZED.value)
 
 
 @blueprint.route('/logout', methods=['DELETE'])
