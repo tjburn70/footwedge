@@ -1,5 +1,7 @@
 .venv
 .idea/*
+/postgres-data
+/redis-data
 /client/node_modules
 /client/package-lock.json
 /api/__pycache__
