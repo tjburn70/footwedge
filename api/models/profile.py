@@ -6,7 +6,7 @@ class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('public.user.user_id'), nullable=False)
     email = db.Column(db.String(120), db.ForeignKey('public.user.user_id'), nullable=False)
-    handicap = db.Column(db.Decimal)
+    handicap = db.Column(db.Numeric)
     home_course = db.Column(db.String)
     dexterity = db.Column(db.String)
 
