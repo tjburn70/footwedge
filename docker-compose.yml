@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: footwedge-db-pg
+    image: postgres:11.7
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=footwedge
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    container_name: footwedge-redis
+    image: redis:5.0.9
+    volumes:
+      - ./redis-data:/var/lib/redis
+    ports:
+      - "6379:6379"
+  elasticsearch:
+    container_name: footwedge-search
+    image: elasticsearch:7.5.2
+    volumes:
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    environment:
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      discovery.type: single-node
+  api:
+    container_name: footwedge-api
+    image: footwedge-api:latest
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+
+volumes:
+  postgres:
+  redis:
+  elasticsearch:
