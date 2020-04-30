@@ -17,22 +17,22 @@ class User(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     middle_initial = db.Column(db.String)
-    phone_number = db.Column(db.Integer)
+    phone_number = db.Column(db.String)
     date_of_birth = db.Column(db.Date)
     gender = db.Column(db.String)
     role = db.Column(db.String, nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
 
-    def __init__(self, email, password, **kwargs):
-        self.email = email
-        self.password_hash = User.hash_password(password)
+    def __init__(self, **kwargs):
+        self.email = kwargs.get('email')
+        self.password_hash = User.hash_password(kwargs.get('password'))
         self.first_name = kwargs.get('first_name')
         self.last_name = kwargs.get('last_name')
         self.middle_initial = kwargs.get('middle_initial')
         self.phone_number = kwargs.get('phone_number')
         self.date_of_birth = kwargs.get('date_of_birth')
         self.gender = kwargs.get('gender')
-        self.role = kwargs.get('role')
+        self.role = kwargs.get('role') or 'standard_user'
         self.registered_on = datetime.now()
 
     @staticmethod
