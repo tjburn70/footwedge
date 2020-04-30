@@ -3,11 +3,11 @@ FROM python:3.6.10-stretch
 RUN apt-get update -y && \
     apt-get install -y python-pip python-dev
 
-WORKDIR /usr/local
+COPY . ./usr/local/app
 
-COPY . .
+WORKDIR /usr/local/app
 
-RUN pip install -r ./requirements.txt
+RUN pip install -r ./api/requirements.txt
 
 RUN ["chmod", "+x", "./script/start_api.sh"]
 ENTRYPOINT ["./script/start_api.sh"]
