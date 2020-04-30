@@ -44,11 +44,7 @@ def register_user():
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    new_user = User(
-        email=email,
-        password=password,
-        **request_body
-    )
+    new_user = User(**request_body)
     user_id = new_user.save()
     access_token = create_access_token(identity=email)
     refresh_token = create_refresh_token(identity=email)
