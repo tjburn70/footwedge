@@ -122,7 +122,7 @@ def logout():
         "status": "success",
         "message": "user is logged out",
     }
-    return make_response(jsonify(response_body), HTTPStatus.value.OK)
+    return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
 
 @blueprint.route('/forgot-password', methods=['GET'])
