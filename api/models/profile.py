@@ -5,15 +5,11 @@ class Profile(db.Model):
     __tablename__ = "profiles"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('public.user.user_id'), nullable=False)
-    email = db.Column(db.String(120), db.ForeignKey('public.user.user_id'), nullable=False)
-    handicap = db.Column(db.Numeric)
     home_course = db.Column(db.String)
     dexterity = db.Column(db.String)
 
     def __init__(self, **kwargs):
         self.user_id = kwargs.get('user_id')
-        self.email = kwargs.get('email')
-        self.handicap = kwargs.get('handicap')
         self.home_course = kwargs.get('home_course')
         self.dexterity = kwargs.get('dexterity')
 
@@ -38,10 +34,10 @@ class Profile(db.Model):
         return self.id
 
     @staticmethod
-    def get_by_email(email):
+    def get_by_id(user_id):
         """
-        Query a User's Profile by their email address
+        Query a User's Profile by their user id
         :param: email
         :return: User or None
         """
-        return Profile.query.filter_by(email=email).first()
+        return Profile.query.filter_by(user_id=user_id).first()
