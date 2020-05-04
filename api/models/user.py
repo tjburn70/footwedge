@@ -10,7 +10,7 @@ from . import db
 
 
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
@@ -20,8 +20,9 @@ class User(db.Model):
     phone_number = db.Column(db.String)
     date_of_birth = db.Column(db.Date)
     gender = db.Column(db.String)
-    role = db.Column(db.String, nullable=False)
+    role = db.Column(db.String, nullable=False, default='standard_user')
     registered_on = db.Column(db.DateTime, nullable=False)
+    handicaps = db.relationship('Handicap', backref='handicaps')
 
     def __init__(self, **kwargs):
         self.email = kwargs.get('email')
@@ -32,7 +33,7 @@ class User(db.Model):
         self.phone_number = kwargs.get('phone_number')
         self.date_of_birth = kwargs.get('date_of_birth')
         self.gender = kwargs.get('gender')
-        self.role = kwargs.get('role') or 'standard_user'
+        self.role = kwargs.get('role')
         self.registered_on = datetime.now()
 
     @staticmethod
