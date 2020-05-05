@@ -4,13 +4,14 @@ from werkzeug.security import (
     generate_password_hash,
     check_password_hash,
 )
-from . import db
+from . import db, DEFAULT_SCHEMA
 
 # TODO enum for roles - admin, standard_user, premium_user
 
 
 class User(db.Model):
     __tablename__ = "user"
+    __table_args__ = {'schema': DEFAULT_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)

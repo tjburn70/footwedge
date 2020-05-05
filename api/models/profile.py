@@ -1,8 +1,9 @@
-from . import db
+from . import db, DEFAULT_SCHEMA
 
 
 class Profile(db.Model):
     __tablename__ = "profile"
+    __table_args__ = {'schema': DEFAULT_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('public.user.id'), nullable=False)
     home_course = db.Column(db.String)
