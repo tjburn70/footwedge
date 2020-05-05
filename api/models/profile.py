@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import db, DEFAULT_SCHEMA
 
 
@@ -8,11 +10,8 @@ class Profile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('public.user.id'), nullable=False)
     home_course = db.Column(db.String)
     dexterity = db.Column(db.String)
-
-    def __init__(self, **kwargs):
-        self.user_id = kwargs.get('user_id')
-        self.home_course = kwargs.get('home_course')
-        self.dexterity = kwargs.get('dexterity')
+    created_ts = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    touched_ts = db.Column(db.DateTime)
 
     def save(self):
         """
