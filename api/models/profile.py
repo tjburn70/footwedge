@@ -3,7 +3,7 @@ from . import db
 
 class Profile(db.Model):
     __tablename__ = "profile"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('public.user.id'), nullable=False)
     home_course = db.Column(db.String)
     dexterity = db.Column(db.String)
