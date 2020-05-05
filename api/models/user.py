@@ -22,7 +22,8 @@ class User(db.Model):
     date_of_birth = db.Column(db.Date)
     gender = db.Column(db.String)
     role = db.Column(db.String, nullable=False, default='standard_user')
-    registered_on = db.Column(db.DateTime, nullable=False)
+    created_ts = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    touched_ts = db.Column(db.DateTime)
     handicaps = db.relationship('Handicap', backref='handicaps')
 
     def __init__(self, **kwargs):
@@ -35,7 +36,8 @@ class User(db.Model):
         self.date_of_birth = kwargs.get('date_of_birth')
         self.gender = kwargs.get('gender')
         self.role = kwargs.get('role')
-        self.registered_on = datetime.now()
+        self.created_ts = kwargs.get('created_ts')
+        self.touched_ts = kwargs.get('touched_ts')
 
     @staticmethod
     def hash_password(password):
