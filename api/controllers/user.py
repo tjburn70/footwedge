@@ -16,11 +16,11 @@ from flask_jwt_extended import (
 
 from api.config import REFRESH_EXPIRES
 from api.controllers import auth
-from api.models.user import User
+from api.models import User
 from api.helpers import (
     requires_json_content,
     throws_500_on_exception,
-)
+)gi
 
 
 blueprint = Blueprint('user', __name__)
