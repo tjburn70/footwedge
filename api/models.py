@@ -274,6 +274,15 @@ class GolfCourse(db.Model):
         return self.id
 
     @staticmethod
+    def get_all() -> list:
+        """
+        Get all GolfCourse records
+        :param: None
+        :return: GolfCourse or empty list
+        """
+        return GolfCourse.query.all()
+
+    @staticmethod
     def get_by_id(golf_course_id: int):
         """
         Filter a GolfCourse by id.
