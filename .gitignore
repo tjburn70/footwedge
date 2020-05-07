@@ -5,5 +5,6 @@
 /client/node_modules
 /client/package-lock.json
 /api/__pycache__
+/api/migrations/__pycache__
+/api/migrations/versions/__pycache__
 /api/controllers/__pycache__
-/api/models/__pycache__
