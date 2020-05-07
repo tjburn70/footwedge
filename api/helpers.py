@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def requires_json_content(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not request.is_json:
+        if request.method in ['POST', 'PUT'] and not request.is_json:
             return make_response(
                 "Expecting Content-Type: application/json or compatible",
                 HTTPStatus.BAD_REQUEST.value
