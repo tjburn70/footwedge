@@ -4,6 +4,8 @@ from api.controllers import (
     auth,
     health,
     user,
+    golf_club,
+    golf_course,
 )
 
 logger = logging.getLogger(__name__)
@@ -12,6 +14,8 @@ ROUTES = {
     '/api/auth': auth.blueprint,
     '/api/health': health.blueprint,
     '/api/user': user.blueprint,
+    '/api/golf-clubs': golf_club.blueprint,
+    '/api/golf-courses': golf_course.blueprint,
 }
 
 
