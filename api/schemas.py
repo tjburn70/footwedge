@@ -41,6 +41,7 @@ class HoleSchema(Schema):
     id = fields.Int(dump_only=True)
     golf_course_id = fields.Int(required=True)
     tee_box_id = fields.Int(required=True)
+    name = fields.Str()
     hole_number = fields.Int(required=True)
     par = fields.Int(required=True)
     handicap = fields.Int(required=True)

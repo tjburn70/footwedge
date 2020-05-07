@@ -352,6 +352,7 @@ class Hole(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     golf_course_id = db.Column(db.Integer, db.ForeignKey('public.golf_course.id'), nullable=False)
     tee_box_id = db.Column(db.Integer, db.ForeignKey('public.tee_box.id'), nullable=False)
+    name = db.Column(db.String, nullable=True)
     hole_number = db.Column(db.Integer, nullable=False)
     par = db.Column(db.Integer, nullable=False)
     handicap = db.Column(db.Integer, nullable=False)
@@ -380,6 +381,16 @@ class Hole(db.Model):
         db.session.merge(self)
         db.session.commit()
         return self.id
+
+    @staticmethod
+    def bulk_save(holes):
+        """
+        Persist a payload of Holes in the database
+        :param: holes
+        :return: None
+        """
+        db.session.bulk_save_objects(holes)
+        db.session.commit()
 
     @staticmethod
     def get_by_golf_course_id(golf_course_id: int) -> list:

@@ -133,6 +133,7 @@ def upgrade():
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('golf_course_id', sa.Integer(), nullable=False),
         sa.Column('tee_box_id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(), nullable=True),
         sa.Column('hole_number', sa.Integer(), nullable=False),
         sa.Column('par', sa.Integer(), nullable=False),
         sa.Column('handicap', sa.Integer(), nullable=False),
