@@ -8,7 +8,7 @@ const PORT = 3000;
 const server = http.createServer((request, response) => {
     var filePath = '.' + request.url;
     if (filePath == './') {
-        filePath = path.resolve(__dirname, './client/public/index.html');
+        filePath = path.resolve(__dirname, './public/index.html');
     }
 
     var headers = {'Content-Type': 'text/html'};
@@ -16,7 +16,7 @@ const server = http.createServer((request, response) => {
     fs.readFile(filePath, (error, content) => {
         if (error) {
             if (error.code == 'ENOENT') {
-                var pathTo404 = path.resolve(__dirname, './client/templates/404.html');
+                var pathTo404 = path.resolve(__dirname, './templates/404.html');
                 fs.readFile(pathTo404, (error, content) => {
                     response.writeHead(404, headers);
                     response.end(content, encoding);
