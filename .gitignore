@@ -2,8 +2,8 @@
 .idea/*
 /postgres-data
 /redis-data
-/client/node_modules
-/client/package-lock.json
+/static/node_modules/
+/static/package-lock.json
 /api/__pycache__
 /api/migrations/__pycache__
 /api/migrations/versions/__pycache__
