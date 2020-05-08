@@ -32,5 +32,5 @@ const server = http.createServer((request, response) => {
 });
 
 server.listen(PORT, HOST, () => {
-    console.log('Vanilla HTTP static server Running at http://${HOST}:${PORT}')
+    console.log('Vanilla HTTP server is up')
 });
