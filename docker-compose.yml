@@ -40,6 +40,13 @@ services:
       - postgres
       - redis
       - elasticsearch
+  client:
+    container_name: footwedge-client
+    image: footwedge-client:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
 
 volumes:
   postgres:
