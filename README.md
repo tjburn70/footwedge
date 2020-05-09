@@ -7,8 +7,6 @@ set golf goals, and search golf courses
 ## Getting Started
 
 * Install Docker 
-* Install npm
-* Generate Javascript bundle
 * Build Docker images
 * Setup database
 * Run docker-compose up
@@ -16,15 +14,12 @@ set golf goals, and search golf courses
 
 ### Prerequisites
 * Docker
-* npm
 
 
 ### Setup
 
-1) Build you Javascript bundle:
-    * ```npm run build ```
 
-2) Build the Footwedge api and client Docker images:
+1) Build the Footwedge api and client Docker images:
 
     api:
      * ```docker build --file Dockerfile-api --tag footwedge-api:latest . ```
@@ -32,12 +27,12 @@ set golf goals, and search golf courses
     client:
      * ```docker build --file Dockerfile-client --tag footwedge-client:latest . ```
      
-3) Initialize the Footwedge db models:
+2) Initialize the Footwedge db models:
 
     * ```export FLASK_APP=index```
     * ```flask db upgrade```
 
-4) Launch Containers!
+3) Launch Containers!
     
     * ```docker-compose up```
     
