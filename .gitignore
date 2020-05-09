@@ -1,4 +1,4 @@
-.venv
+venv
 .idea/*
 /postgres-data
 /redis-data
