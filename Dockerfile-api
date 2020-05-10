@@ -9,5 +9,7 @@ WORKDIR /usr/local/app
 
 RUN pip install -r ./api/requirements.txt
 
+EXPOSE 8000
+
 RUN ["chmod", "+x", "./script/start_api.sh"]
 ENTRYPOINT ["./script/start_api.sh"]
