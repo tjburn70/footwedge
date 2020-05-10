@@ -5,9 +5,9 @@ REFRESH_EXPIRES = timedelta(days=30)
 
 
 class FlaskConfig:
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost/footwedge'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/footwedge'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    APP_NAME = 'all-square'
+    APP_NAME = 'footwedge'
     JWT_SECRET_KEY = 'ED696FE6797CE3AB066F3C7CBE8D0A59D72A422BF718E0565453BFA494D74589'
     JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
     JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
