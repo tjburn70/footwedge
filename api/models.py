@@ -177,6 +177,15 @@ class Handicap(db.Model):
         return Handicap.query.filter_by(user_id=user_id, record_end_date=None).first()
 
     @staticmethod
+    def get_by_date(user_id, start_date):
+        """
+        Query all User's Handicaps greater than a given date
+        :param: user_id, start_date
+        :return: list(User) or empty list
+        """
+        return Handicap.query.filter_by(user_id=user_id).filter(Handicap.record_start_date >= start_date).all()
+
+    @staticmethod
     def get_all(user_id):
         """
         Query a User's active Handicap by their user id

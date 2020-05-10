@@ -1,6 +1,15 @@
 from marshmallow import Schema, fields
 
 
+class HandicapSchema(Schema):
+    id = fields.Int(dump_only=True)
+    user_id = fields.Int(required=True)
+    index = fields.Decimal(required=True)
+    authorized_association = fields.Str()
+    record_start_date = fields.DateTime(dump_only=True)
+    record_end_date = fields.DateTime()
+
+
 class GolfClubSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
