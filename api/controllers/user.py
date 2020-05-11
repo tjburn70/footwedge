@@ -21,9 +21,13 @@ from api.controllers import auth
 from api.models import (
     User,
     Handicap,
+    GolfRound,
+    GolfRoundStats,
 )
 from api.schemas import (
-    HandicapSchema
+    HandicapSchema,
+    GolfRoundSchema,
+    GolfRoundStatsSchema
 )
 from api.helpers import (
     requires_json_content,
@@ -33,6 +37,8 @@ from api.helpers import (
 
 blueprint = Blueprint('user', __name__)
 handicap_schema = HandicapSchema()
+golf_round_schema = GolfRoundSchema()
+golf_round_stats_schema = GolfRoundStatsSchema()
 
 
 @blueprint.route('/register', methods=['POST'])
@@ -178,7 +184,7 @@ def handicap(user_id):
     request_body = request.get_json()
     request_body['user_id'] = user_id
     try:
-        data = handicap_schema.load(request.get_json())
+        data = handicap_schema.load(request_body)
     except ValidationError as e:
         response_body = {
             'status': 'fail',
