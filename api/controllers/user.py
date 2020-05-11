@@ -200,3 +200,82 @@ def handicap(user_id):
         'uri': f'/user/{user_id}/handicaps',
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+
+@blueprint.route('<int:user_id>/golf-rounds', methods=['GET', 'POST'])
+@requires_json_content
+@jwt_required
+def golf_rounds(user_id):
+    if request.method == 'GET':
+        rounds = GolfRound.get_by_user_id(user_id=user_id)
+        results = golf_round_schema.dump(rounds, many=True)
+        response_body = {
+            'status': 'success',
+            'result': results,
+        }
+        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    request_body = request.get_json()
+    request_body['user_id'] = user_id
+    try:
+        data = golf_round_schema.load(request_body)
+    except ValidationError as e:
+        response_body = {
+            'status': 'fail',
+            'message': e.messages
+        }
+        return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+
+    new_round = GolfRound(**data)
+    golf_round_id = new_round.save()
+    response_body = {
+        'status': 'success',
+        'message': f"GolfRound: '{golf_round_id}' was successfully added for user_id: '{user_id}'",
+        'uri': f'/user/{user_id}/golf-rounds/{golf_round_id}',
+    }
+    return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+
+@blueprint.route('<int:user_id>/golf-rounds/<int:golf_round_id/golf-round-stats>', methods=['GET', 'POST'])
+@requires_json_content
+@jwt_required
+def golf_round_stats(user_id, golf_round_id):
+    if request.method == 'GET':
+        round_stats = GolfRoundStats.get_by_golf_round_id(golf_round_id=golf_round_id)
+        results = golf_round_stats_schema.dump(round_stats, many=True)
+        response_body = {
+            'status': 'success',
+            'result': results,
+        }
+        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    request_body = request.get_json()
+    if not request_body.get('round_stats'):
+        response_body = {
+            'status': 'fail',
+            'message': "Request is missing required parameter: 'round_stats'"
+        }
+        return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+    round_stats_data = []
+    for hole_stat in request_body.get('round_stats'):
+        hole_stat['golf_round_id'] = golf_round_id
+        try:
+            data = golf_round_stats_schema.load(hole_stat)
+        except ValidationError as e:
+            response_body = {
+                'status': 'fail',
+                'message': e.messages
+            }
+            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+
+        round_stats_data.append(GolfRoundStats(**data))
+
+    GolfRoundStats.bulk_save(round_stats=round_stats_data)
+    message = f"GolfRoundStats records were successfully added for GolfRound id: '{golf_round_id}'"
+    response_body = {
+        'status': 'success',
+        'message': message,
+        'uri': f'/users/{user_id}/golf-rounds/{golf_round_id}/golf-round-stats',
+    }
+    return make_response(jsonify(response_body), HTTPStatus.OK.value)

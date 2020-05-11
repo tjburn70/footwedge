@@ -454,6 +454,15 @@ class GolfRound(db.Model):
         db.session.commit()
         return self.id
 
+    @staticmethod
+    def get_by_user_id(user_id):
+        """
+        Retrieve all GolfRound records by User id
+        :param: user_id
+        :return: List(GolfRound) or empty list
+        """
+        return GolfRound.query.filter_by(user_id=user_id).all()
+
 
 class GolfRoundStats(db.Model):
     __tablename__ = "golf_round_stats"
@@ -490,3 +499,22 @@ class GolfRoundStats(db.Model):
         db.session.merge(self)
         db.session.commit()
         return self.id
+
+    @staticmethod
+    def bulk_save(round_stats):
+        """
+        Persist a payload of GolfRoundStats in the database
+        :param: round_states
+        :return: None
+        """
+        db.session.bulk_save_objects(round_stats)
+        db.session.commit()
+
+    @staticmethod
+    def get_by_golf_round_id(golf_round_id):
+        """
+        Retrieve all GolfRoundStats records by GolfRound id
+        :param: user_id
+        :return: List(GolfRoundStats) or empty list
+        """
+        return GolfRoundStats.query.filter_by(golf_round_id=golf_round_id).all()
