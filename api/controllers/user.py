@@ -236,7 +236,7 @@ def golf_rounds(user_id):
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
 
-@blueprint.route('<int:user_id>/golf-rounds/<int:golf_round_id/golf-round-stats>', methods=['GET', 'POST'])
+@blueprint.route('<int:user_id>/golf-rounds/<int:golf_round_id>/golf-round-stats', methods=['GET', 'POST'])
 @requires_json_content
 @jwt_required
 def golf_round_stats(user_id, golf_round_id):
