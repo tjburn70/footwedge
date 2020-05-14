@@ -2,6 +2,7 @@ from datetime import timedelta
 
 ACCESS_EXPIRES = timedelta(seconds=300)
 REFRESH_EXPIRES = timedelta(days=30)
+ELASTICSEARCH_URL = 'http://localhost:9200'
 
 
 class FlaskConfig:
