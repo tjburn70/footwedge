@@ -40,8 +40,8 @@ class TeeBoxSchema(Schema):
     par = fields.Int()
     distance = fields.Int()
     unit = fields.Str()
-    course_rating = fields.Decimal()
-    slope = fields.Decimal()
+    course_rating = fields.Decimal(as_string=True)
+    slope = fields.Decimal(as_string=True)
     created_ts = fields.DateTime(dump_only=True)
     touched_ts = fields.DateTime()
 
