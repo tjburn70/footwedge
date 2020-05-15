@@ -77,7 +77,7 @@ def tee_boxes(golf_course_id):
             results = tee_box_schema.dump(boxes, many=True)
             response_body = {
                 'status': 'success',
-                'result': results
+                'result': results.data
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
