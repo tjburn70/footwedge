@@ -61,8 +61,8 @@ def register_user():
 
     new_user = User(**request_body)
     user_id = new_user.save()
-    access_token = create_access_token(identity=email)
-    refresh_token = create_refresh_token(identity=email)
+    access_token = create_access_token(identity=user_id)
+    refresh_token = create_refresh_token(identity=user_id)
     refresh_jti = get_jti(encoded_token=refresh_token)
     auth.redis_client.set(
         name=refresh_jti,
@@ -102,8 +102,8 @@ def login():
 
     valid_password = current_user.verify_password(password)
     if valid_password:
-        access_token = create_access_token(identity=email)
-        refresh_token = create_refresh_token(identity=email)
+        access_token = create_access_token(identity=current_user.id)
+        refresh_token = create_refresh_token(identity=current_user.id)
         refresh_jti = get_jti(encoded_token=refresh_token)
         auth.redis_client.set(
             name=refresh_jti,
@@ -211,14 +211,14 @@ def golf_rounds(user_id):
         results = golf_round_schema.dump(rounds, many=True)
         response_body = {
             'status': 'success',
-            'result': results,
+            'result': results.data,
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
     request_body = request.get_json()
     request_body['user_id'] = user_id
     try:
-        data = golf_round_schema.load(request_body)
+        golf_round = golf_round_schema.load(request_body)
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -226,7 +226,7 @@ def golf_rounds(user_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    new_round = GolfRound(**data)
+    new_round = GolfRound(**golf_round.data)
     golf_round_id = new_round.save()
     response_body = {
         'status': 'success',
