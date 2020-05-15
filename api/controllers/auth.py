@@ -38,7 +38,10 @@ def token_is_revoked(decrypted_token):
 @blueprint.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
-    user = get_jwt_identity()
-    access_token = create_access_token(identity=user)
-    response_body = {'access_token': access_token}
+    user_id = get_jwt_identity()
+    access_token = create_access_token(identity=user_id)
+    response_body = {
+        'access_token': access_token,
+        'user_id': user_id,
+    }
     return make_response(jsonify(response_body), HTTPStatus.CREATED.value)
