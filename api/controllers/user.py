@@ -167,7 +167,7 @@ def handicap(user_id):
             results = handicap_schema.dump(handicaps, many=True)
             response_body = {
                 'status': 'success',
-                'result': results,
+                'result': results.data,
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
         else:
@@ -175,7 +175,7 @@ def handicap(user_id):
             result = handicap_schema.dump(current_handicap)
             response_body = {
                 'status': 'success',
-                'result': result,
+                'result': result.data,
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
@@ -245,7 +245,7 @@ def golf_round_stats(user_id, golf_round_id):
         results = golf_round_stats_schema.dump(round_stats, many=True)
         response_body = {
             'status': 'success',
-            'result': results,
+            'result': results.data,
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
