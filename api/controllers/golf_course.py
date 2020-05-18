@@ -33,11 +33,21 @@ hole_schema = HoleSchema()
 @blueprint.route('/', methods=['GET'])
 @throws_500_on_exception
 def golf_courses():
+    ids = request.args.get('id')
+    if ids:
+        courses = GolfCourse.get_by_ids(golf_course_ids=ids)
+        results = golf_course_schema.dump(courses, many=True)
+        response_body = {
+            'status': 'success',
+            'result': results.data
+        }
+        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
     courses = GolfCourse.get_all()
     results = golf_course_schema.dump(courses, many=True)
     response_body = {
         'status': 'success',
-        'result': results
+        'result': results.data
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
