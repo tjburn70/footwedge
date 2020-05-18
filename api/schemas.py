@@ -24,15 +24,6 @@ class GolfClubSchema(Schema):
     touched_ts = fields.DateTime()
 
 
-class GolfCourseSchema(Schema):
-    id = fields.Int(dump_only=True)
-    golf_club_id = fields.Int(required=True)
-    name = fields.Str(required=True)
-    num_holes = fields.Int()
-    created_ts = fields.DateTime(dump_only=True)
-    touched_ts = fields.DateTime()
-
-
 class TeeBoxSchema(Schema):
     id = fields.Int(dump_only=True)
     golf_course_id = fields.Int(required=True)
@@ -42,6 +33,16 @@ class TeeBoxSchema(Schema):
     unit = fields.Str()
     course_rating = fields.Decimal(as_string=True)
     slope = fields.Decimal(as_string=True)
+    created_ts = fields.DateTime(dump_only=True)
+    touched_ts = fields.DateTime()
+
+
+class GolfCourseSchema(Schema):
+    id = fields.Int(dump_only=True)
+    golf_club_id = fields.Int(required=True)
+    name = fields.Str(required=True)
+    num_holes = fields.Int()
+    tee_boxes = fields.List(fields.Nested(TeeBoxSchema))
     created_ts = fields.DateTime(dump_only=True)
     touched_ts = fields.DateTime()
 
