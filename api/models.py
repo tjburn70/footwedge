@@ -301,6 +301,15 @@ class GolfCourse(db.Model):
         return GolfCourse.query.filter_by(id=golf_course_id).first()
 
     @staticmethod
+    def get_by_ids(golf_course_ids: list) -> list:
+        """
+        Filter a GolfCourse by a set of ids
+        :param: golf_course_ids
+        :return: list(GolfCourse) or empty array
+        """
+        return GolfCourse.query.filter(GolfCourse.id.in_(golf_course_ids)).all()
+
+    @staticmethod
     def get_by_golf_club_id(golf_club_id: int) -> list:
         """
         Filter a GolfCourse by GolfClub id.
