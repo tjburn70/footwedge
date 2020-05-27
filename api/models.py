@@ -441,7 +441,7 @@ class GolfRound(db.Model):
     played_on = db.Column(db.Date, nullable=False)
     created_ts = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     touched_ts = db.Column(db.DateTime)
-    round_stats = db.relationship('GolfRoundStats', backref='round_stats')
+    stats = db.relationship('GolfRoundStats', backref='round_stats')
 
     def save(self):
         """
