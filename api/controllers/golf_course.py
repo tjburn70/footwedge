@@ -33,7 +33,7 @@ hole_schema = HoleSchema()
 @blueprint.route('/', methods=['GET'])
 @throws_500_on_exception
 def golf_courses():
-    ids = request.args.get('id')
+    ids = request.args.getlist('id')
     if ids:
         courses = GolfCourse.get_by_ids(golf_course_ids=ids)
         results = golf_course_schema.dump(courses, many=True)
@@ -94,7 +94,7 @@ def tee_boxes(golf_course_id):
     try:
         request_body = request.get_json()
         request_body['golf_course_id'] = golf_course_id
-        data = tee_box_schema.load(request_body)
+        result = tee_box_schema.load(request_body)
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -102,7 +102,7 @@ def tee_boxes(golf_course_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    tee_box = TeeBox(**data)
+    tee_box = TeeBox(**result.data)
     tee_box_id = tee_box.save()
     response_body = {
         'status': 'success',
@@ -112,10 +112,26 @@ def tee_boxes(golf_course_id):
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
 
-@blueprint.route('/<int:golf_course_id>/tee-boxes/<int:tee_box_id>/holes', methods=['POST'])
+@blueprint.route('/<int:golf_course_id>/tee-boxes/<int:tee_box_id>/holes', methods=['GET', 'POST'])
 @requires_json_content
 @throws_500_on_exception
 def holes(golf_course_id, tee_box_id):
+    if request.method == 'GET':
+        hole_records = Hole.get_by_tee_box_id(tee_box_id=tee_box_id)
+        if not hole_records:
+            response_body = {
+                'status': 'fail',
+                'message': f"No Holes exist for TeeBox id: '{tee_box_id}'"
+            }
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+        else:
+            results = hole_schema.dump(hole_records, many=True)
+            response_body = {
+                'status': 'success',
+                'result': results.data
+            }
+            return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
     request_body = request.get_json()
     if not request_body.get('holes'):
         response_body = {
@@ -129,7 +145,7 @@ def holes(golf_course_id, tee_box_id):
         hole['golf_course_id'] = golf_course_id
         hole['tee_box_id'] = tee_box_id
         try:
-            data = hole_schema.load(hole)
+            result = hole_schema.load(hole)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
@@ -137,7 +153,7 @@ def holes(golf_course_id, tee_box_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        holes_data.append(Hole(**data))
+        holes_data.append(Hole(**result.data))
 
     Hole.bulk_save(holes=holes_data)
 
