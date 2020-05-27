@@ -61,18 +61,6 @@ class HoleSchema(Schema):
     touched_ts = fields.DateTime()
 
 
-class GolfRoundSchema(Schema):
-    id = fields.Int(dump_only=True)
-    golf_course_id = fields.Int(required=True)
-    tee_box_id = fields.Int(required=True)
-    user_id = fields.Int(required=True)
-    gross_score = fields.Int(required=True)
-    towards_handicap = fields.Boolean()
-    played_on = fields.Date(required=True)
-    created_ts = fields.DateTime(dump_only=True)
-    touched_ts = fields.DateTime()
-
-
 class GolfRoundStatsSchema(Schema):
     id = fields.Int(dump_only=True)
     golf_round_id = fields.Int(required=True)
@@ -84,5 +72,18 @@ class GolfRoundStatsSchema(Schema):
     chips = fields.Integer()
     greenside_sand_shots = fields.Integer()
     penalties = fields.Integer()
+    created_ts = fields.DateTime(dump_only=True)
+    touched_ts = fields.DateTime()
+
+
+class GolfRoundSchema(Schema):
+    id = fields.Int(dump_only=True)
+    golf_course_id = fields.Int(required=True)
+    tee_box_id = fields.Int(required=True)
+    user_id = fields.Int(required=True)
+    gross_score = fields.Int(required=True)
+    towards_handicap = fields.Boolean()
+    played_on = fields.Date(required=True)
+    stats = fields.List(fields.Nested(GolfRoundStatsSchema))
     created_ts = fields.DateTime(dump_only=True)
     touched_ts = fields.DateTime()
