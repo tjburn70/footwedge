@@ -36,12 +36,13 @@ def golf_clubs():
         results = golf_club_schema.dump(clubs, many=True)
         response_body = {
             'status': 'success',
-            'result': results
+            'result': results.data
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
     try:
-        data = golf_club_schema.load(request.get_json())
+        request_body = request.get_json()
+        result = golf_club_schema.load(request_body)
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -49,7 +50,7 @@ def golf_clubs():
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    club = GolfClub(**data)
+    club = GolfClub(**result.data)
     club_id = club.save()
     response_body = {
         'status': 'success',
@@ -73,7 +74,7 @@ def golf_clubs_by_id(golf_club_id):
     result = golf_club_schema.dump(golf_club)
     response_body = {
         'status': 'success',
-        'result': result
+        'result': result.data
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
@@ -93,14 +94,14 @@ def golf_courses(golf_club_id):
             results = golf_course_schema.dump(courses, many=True)
             response_body = {
                 'status': 'success',
-                'result': results
+                'result': results.data
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
     try:
         request_body = request.get_json()
         request_body['golf_club_id'] = golf_club_id
-        data = golf_course_schema.load(request_body)
+        result = golf_course_schema.load(request_body)
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -108,7 +109,7 @@ def golf_courses(golf_club_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    course = GolfCourse(**data)
+    course = GolfCourse(**result.data)
     course_id = course.save()
     response_body = {
         'status': 'success',
