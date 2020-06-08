@@ -472,6 +472,15 @@ class GolfRound(db.Model):
         """
         return GolfRound.query.filter_by(user_id=user_id).all()
 
+    @staticmethod
+    def get_by_id(golf_round_id):
+        """
+        Retrieve GolfRound by id
+        :param: golf_round_id
+        :return: GolfRound or None
+        """
+        return GolfRound.query.filter_by(id=golf_round_id).one_or_none()
+
 
 class GolfRoundStats(db.Model):
     __tablename__ = "golf_round_stats"
@@ -516,8 +525,9 @@ class GolfRoundStats(db.Model):
         :param: round_states
         :return: None
         """
-        db.session.bulk_save_objects(round_stats)
+        db.session.add_all(round_stats)
         db.session.commit()
+        return [stat.id for stat in round_stats]
 
     @staticmethod
     def get_by_golf_round_id(golf_round_id):
