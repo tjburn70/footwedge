@@ -257,11 +257,11 @@ def golf_round_stats(user_id, golf_round_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    round_stats_data = []
+    round_stats = []
     for hole_stat in request_body.get('round_stats'):
         hole_stat['golf_round_id'] = golf_round_id
         try:
-            data = golf_round_stats_schema.load(hole_stat)
+            result = golf_round_stats_schema.load(hole_stat)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
@@ -269,13 +269,15 @@ def golf_round_stats(user_id, golf_round_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        round_stats_data.append(GolfRoundStats(**data))
+        round_stats.append(GolfRoundStats(**result.data))
 
-    GolfRoundStats.bulk_save(round_stats=round_stats_data)
+    GolfRoundStats.bulk_save(round_stats=round_stats)
+    results = golf_round_stats_schema.dump(round_stats, many=True)
     message = f"GolfRoundStats records were successfully added for GolfRound id: '{golf_round_id}'"
     response_body = {
         'status': 'success',
         'message': message,
         'uri': f'/users/{user_id}/golf-rounds/{golf_round_id}/golf-round-stats',
+        'result': results.data,
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
