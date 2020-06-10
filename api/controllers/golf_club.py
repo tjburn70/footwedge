@@ -55,7 +55,7 @@ def golf_clubs():
     response_body = {
         'status': 'success',
         'message': f"Golf Club: '{club.name}' was successfully added",
-        'uri': f'/golf-clubs/{club_id}',
+        'uri': f'api/golf-clubs/{club_id}',
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
@@ -114,6 +114,6 @@ def golf_courses(golf_club_id):
     response_body = {
         'status': 'success',
         'message': f"Golf Course: '{course.name}' was successfully added",
-        'uri': f'/golf-clubs/{golf_club_id}/golf-courses/{course_id}',
+        'uri': f'api/golf-clubs/{golf_club_id}/golf-courses/{course_id}',
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
