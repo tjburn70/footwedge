@@ -228,9 +228,11 @@ def golf_rounds(user_id):
 
     new_round = GolfRound(**golf_round.data)
     golf_round_id = new_round.save()
+    result = golf_round_schema.dump(new_round)
     response_body = {
         'status': 'success',
         'message': f"GolfRound: '{golf_round_id}' was successfully added for user_id: '{user_id}'",
+        'result': result.data,
         'uri': f'/user/{user_id}/golf-rounds/{golf_round_id}',
     }
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
