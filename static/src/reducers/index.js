@@ -13,6 +13,7 @@ import {
   LOGOUT_SUCCESS,
   LOGOUT_REQUEST,
   LOGOUT_FAILURE,
+  GET_HANDICAP_SUCCESS,
 } from '../actions/api';
 
 
@@ -36,6 +37,8 @@ const currentUser = (state = null, action) => {
       return Object.assign({}, state, {
         currentUser: action.payload.user_id
       })
+    case ACCESS_TOKEN_SUCCESS:
+      return action.payload.user_id
     case LOGOUT_SUCCESS:
       return null
     default:
@@ -115,10 +118,32 @@ const auth = (state = initialAuthState, action) => {
   }
 }
 
+const initialHandicapState = {
+  index: '',
+  authorizedAssociation: '',
+  lastCalculated: '',
+};
+
+const handicap = (state = initialHandicapState, action) => {
+  switch (action.type) {
+    case GET_HANDICAP_SUCCESS:
+      return Object.assign({}, state, {
+        index: action.payload.index,
+        authorizedAssociation: action.payload.authorized_association,
+        lastCalculated: action.payload.record_start_date,
+      })
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   errorMessage,
   currentUser,
   auth,
+  handicap,
+  rounds,
+  stats,
 });
 
 export default rootReducer;
