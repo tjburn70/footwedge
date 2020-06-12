@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Route, Switch, Link } from 'react-router-dom';
-import { getAccessToken, loginUser, registerUser } from '../actions/api';
+import { getAccessToken, loginUser, registerUser } from './actions/api';
 import PrivateRoute from './PrivateRoute';
 import { NavBar } from './NavBar';
 import { Login } from './Login';
 import { RegisterUser } from './RegisterUser';
-import PlayerProfile from './PlayerProfile';
+import { PlayerProfile } from './PlayerProfile';
 
 
 class App extends React.Component {
@@ -23,7 +23,15 @@ class App extends React.Component {
   }
 
   render() {
-    const { dispatch, auth, currentUser, errorMessage } = this.props;
+    const {
+      dispatch,
+      auth,
+      currentUser,
+      handicap,
+      rounds,
+      stats,
+      errorMessage
+    } = this.props;
 
     return (
       <div>
@@ -47,7 +55,14 @@ class App extends React.Component {
               path='/player-profile'
               component={PlayerProfile}
               isAuthenticated={auth.isAuthenticated}
-              currentUser={currentUser}>
+              dispatch={dispatch}
+              data={{
+                userId: currentUser,
+                errorMessage: errorMessage,
+                handicap: handicap,
+                rounds: rounds,
+                stats: stats,
+              }}>
             </PrivateRoute>
           </Switch>
         </div>
@@ -59,13 +74,12 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    auth: {
-      isAuthenticated: state.auth.isAuthenticated,
-      isFetching: state.auth.isFetching,
-      accessToken: state.auth.accessToken,
-    },
+    auth: state.auth,
     errorMessage: state.errorMessage,
     currentUser: state.currentUser,
+    handicap: state.handicap,
+    rounds: state.rounds,
+    stats: state.stats,
   }
 };
 
