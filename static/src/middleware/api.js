@@ -14,10 +14,6 @@ export const apiMiddleware = store => next => action => {
   let { endpoint, httpMethod, body, query, headers } = apiAction;
   const { types, schema } = apiAction;
 
-  if (httpMethod === 'GET') {
-    headers = {};
-  }
-
   if (body) {
     body = JSON.stringify(body);
   }
