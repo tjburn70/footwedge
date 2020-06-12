@@ -98,3 +98,127 @@ export const logoutUser = () => ({
     ]
   }
 })
+
+export const ENTER_ROUND_REQUEST = 'ENTER_ROUND_REQUEST';
+export const ENTER_ROUND_SUCCESS = 'ENTER_ROUND_SUCCESS';
+export const ENTER_ROUND_FAILURE = 'ENTER_ROUND_FAILURE';
+
+export const enterGolfRound = (userId, data) => {
+  const endPoint = 'http://127.0.0.1:8000/api/user/'+userId+'/golf-rounds';
+  const {
+    golfCourseId,
+    teeBoxId,
+    totalScore,
+    towardsHandicap,
+    playedOn
+  } = data;
+
+  const body = {
+    golf_course_id: golfCourseId,
+    tee_box_id: teeBoxId,
+    gross_score: totalScore,
+    towards_handicap: towardsHandicap,
+    played_on: playedOn,
+  };
+
+  return {
+    [ACCESS_TOKEN_REQUIRED]: {
+      endpoint: endPoint,
+      httpMethod: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+      types: [
+        ENTER_ROUND_REQUEST,
+        ENTER_ROUND_SUCCESS,
+        ENTER_ROUND_FAILURE,
+      ]
+    }
+  }
+}
+
+export const GET_HANDICAP_REQUEST = 'FETCH_HANDICAP_REQUEST';
+export const GET_HANDICAP_SUCCESS = 'FETCH_HANDICAP_SUCCESS';
+export const GET_HANDICAP_FAILURE = 'FETCH_HANDICAP_FAILURE';
+
+export const getHandicap = (userId) => {
+  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/handicaps`;
+  return {
+    [ACCESS_TOKEN_REQUIRED]: {
+      endpoint: endPoint,
+      httpMethod: 'GET',
+      headers: {},
+      types: [
+        GET_HANDICAP_REQUEST,
+        GET_HANDICAP_SUCCESS,
+        GET_HANDICAP_FAILURE,
+      ]
+    }
+  }
+}
+
+export const GET_GOLF_ROUNDS_REQUEST = 'GET_GOLF_ROUNDS_REQUEST';
+export const GET_GOLF_ROUNDS_SUCCESS = 'GET_GOLF_ROUNDS_SUCCESS';
+export const GET_GOLF_ROUNDS_FAILURE = 'GET_GOLF_ROUNDS_FAILURE';
+
+export const getGolfRounds = (userId) => {
+  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/golf-rounds`;
+  return {
+    [ACCESS_TOKEN_REQUIRED]: {
+      endpoint: endPoint,
+      httpMethod: 'GET',
+      headers: {},
+      types: [
+        GET_GOLF_ROUNDS_REQUEST,
+        GET_GOLF_ROUNDS_SUCCESS,
+        GET_GOLF_ROUNDS_FAILURE,
+      ]
+    }
+  }
+}
+
+export const ADD_ROUND_STAT_REQUEST = 'ADD_ROUND_STAT_REQUEST';
+export const ADD_ROUND_STAT_SUCCESS = 'ADD_ROUND_STAT_SUCCESS';
+export const ADD_ROUND_STAT_FAILURE = 'ADD_ROUND_STAT_FAILURE';
+
+export const addRoundStat = (userId, roundId, holeId, data) => {
+  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/golf-rounds/${roundId}/golf-round-stats`;
+  const {
+    score,
+    fairwayHit,
+    greenInRegulation,
+    totalPutts,
+    totalChips,
+    greenSideSandShots,
+    totalPenalties,
+  } = data;
+
+  const body = {
+    round_stats: [
+      {
+        golf_round_id: roundId,
+        hole_id: holeId,
+        gross_score: score,
+        fairway_hit: fairwayHit,
+        green_in_regulation: greenInRegulation,
+        putts: totalPutts,
+        chips: totalChips,
+        greenside_sand_shots: greenSideSandShots,
+        penalties: totalPenalties,
+      }
+    ]
+  };
+
+  return {
+    [ACCESS_TOKEN_REQUIRED]: {
+      endpoint: endPoint,
+      httpMethod: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+      types: [
+        ADD_ROUND_STAT_REQUEST,
+        ADD_ROUND_STAT_SUCCESS,
+        ADD_ROUND_STAT_FAILURE,
+      ]
+    }
+  }
+}
