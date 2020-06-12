@@ -1,9 +1,19 @@
 import axios from 'axios';
 import qs from "query-string";
 import { normalize, schema } from 'normalizr';
+import { getAccessToken, logoutUser } from '../actions/api';
+import { REFRESH_TOKEN_REQUIRED, ACCESS_TOKEN_REQUIRED } from './auth';
 
 
 export const CALL_API = "CALL_API";
+
+const hasAuthHeaders = (apiAction) => {
+  return (typeof apiAction.headers['Authorization'] !== 'undefined');
+}
+
+const isRefreshAction = (apiAction, refreshAction) => {
+  return apiAction.endpoint === refreshAction[REFRESH_TOKEN_REQUIRED].endpoint;
+}
 
 export const apiMiddleware = store => next => action => {
   const apiAction = action[CALL_API];
@@ -43,8 +53,6 @@ export const apiMiddleware = store => next => action => {
 
   return axios.request(config)
     .then(res => {
-      console.log(res.statusCode);
-      console.log(res.data);
       const payload = res.data;
       // want to normalize the response
       next(actionWith({
@@ -56,10 +64,22 @@ export const apiMiddleware = store => next => action => {
       let errorMessage = null
       if (error.response) {
         errorMessage = error.response.data.message;
-        let statusCode = error.response.statusCode;
-        console.log(statusCode);
-        if (statusCode === 401) {
-          console.log('Uh Oh... received a 401');
+        const statusCode = error.response.statusCode;
+        if (statusCode === 401 &&
+            hasAuthHeaders(apiAction) &&
+            !isRefreshAction(apiAction, getAccessToken())) {
+          return store.dispatch(getAccessToken())
+            .then(() => {
+              const actionToRetry = {};
+              // need to set this key so that auth middleware picks it up
+              actionToRetry[ACCESS_TOKEN_REQUIRED] = apiAction;
+              return store.dispatch(actionToRetry);
+            })
+        } else if (statusCode === 401 &&
+                   hasAuthHeaders(apiAction) &&
+                   isRefreshAction(apiAction, getAccessToken())) {
+          console.log('invalid refresh token!');
+          return store.dispatch(logoutUser());
         }
       } else if (error.request) {
         errorMessage = 'Uh Oh... Network Issue';
