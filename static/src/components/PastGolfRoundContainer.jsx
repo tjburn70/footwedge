@@ -18,7 +18,7 @@ const GOLF_COURSE_KEY = 'golf_courses';
 const teeBoxes = new schema.Entity(TEE_BOX_KEY);
 const golfCourses = new schema.Entity(GOLF_COURSE_KEY, {tee_boxes: [teeBoxes]});
 
-export default function PastGolfRoundsContainer({ rounds, stats, dispatch }) {
+export default function PastGolfRoundContainer({ rounds, stats, dispatch }) {
   const [golfCourseById, setGolfCourseById] = useState({});
   const [teeBoxById, setTeeBoxById] = useState({});
   const roundMap = rounds.byId;
