@@ -3,7 +3,6 @@ import { Link, Route } from 'react-router';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { EnterRound } from './EnterRound';
-import ScorecardHeader from './ScorecardHeader';
 import Handicap  from './HandicapCard';
 import PastGolfRoundsContainer from './PastGolfRoundsContainer';
 import { enterGolfRound, getHandicap, getGolfRounds } from '../actions/api';
