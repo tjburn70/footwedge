@@ -4,7 +4,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { EnterRound } from './EnterRound';
 import Handicap  from './HandicapCard';
-import PastGolfRoundsContainer from './PastGolfRoundsContainer';
+import PastGolfRoundContainer from './PastGolfRoundContainer';
 import { enterGolfRound, getHandicap, getGolfRounds } from '../actions/api';
 
 export const PlayerProfile = (props) => {
@@ -40,7 +40,7 @@ export const PlayerProfile = (props) => {
           />
         </Grid>
         <Grid>
-          <PastGolfRoundsContainer
+          <PastGolfRoundContainer
             rounds={rounds}
             stats={stats}
             dispatch={props.dispatch}
