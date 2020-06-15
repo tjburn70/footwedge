@@ -9,7 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from '@material-ui/icons/Edit';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import { addRoundStat } from './actions/api';
+import { addRoundStat } from '../actions/api';
 
 
 export default function RoundStat({ round, stat, holeId, dispatch }) {
