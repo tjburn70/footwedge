@@ -51,7 +51,6 @@ export const unsetRefreshToken = store => next => action => {
   const validActions = [LOGOUT_SUCCESS, LOGOUT_FAILURE];
   if (validActions.indexOf(action.type) !== -1) {
     localStorage.removeItem('refresh_token');
-    let token = localStorage.getItem('refresh_token');
   }
 
   return next(action);
