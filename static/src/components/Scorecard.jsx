@@ -47,7 +47,7 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
   }, [round.id]);
 
   const teeBoxInfo = () => {
-    if (teeBox == undefined) return;
+    if (typeof teeBox === 'undefined') return;
     return `${teeBox.tee_color} (${teeBox.course_rating} | ${teeBox.slope})`;
   }
 
