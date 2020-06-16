@@ -11,10 +11,6 @@ import { PlayerProfile } from './PlayerProfile';
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     let token = localStorage.getItem('refresh_token');
     if (token) {
