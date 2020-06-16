@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { normalize } from 'normalizr';
-import { round, stat } from '../actions/schema';
+import { round } from '../actions/schema';
 
 import {
   ADD_ROUND_STAT_SUCCESS,
