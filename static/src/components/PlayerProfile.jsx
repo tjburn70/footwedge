@@ -16,18 +16,19 @@ export const PlayerProfile = (props) => {
     stats,
   } = props.data;
   const { path } = props.match;
+  const dispatch = props.dispatch;
 
   useEffect(() => {
     if (userId) {
-      props.dispatch(getHandicap(userId));
+      dispatch(getHandicap(userId));
     }
-  }, [userId, handicap.index]);
+  }, [userId, handicap.index, dispatch]);
 
   useEffect(() => {
     if (userId) {
-      props.dispatch(getGolfRounds(userId));
+      dispatch(getGolfRounds(userId));
     }
-  }, [userId, Object.keys(rounds).length]);
+  }, [userId, Object.keys(rounds).length, dispatch]);
 
   return (
     <div>
@@ -43,7 +44,7 @@ export const PlayerProfile = (props) => {
           <PastGolfRoundContainer
             rounds={rounds}
             stats={stats}
-            dispatch={props.dispatch}
+            dispatch={dispatch}
           />
         </Grid>
       </Container>
@@ -51,7 +52,7 @@ export const PlayerProfile = (props) => {
       <Route path={`${path}/enter-round`}>
         <EnterRound
           enterGolfRound={
-            (userId, data) => props.dispatch(enterGolfRound(userId, data))
+            (userId, data) => dispatch(enterGolfRound(userId, data))
           }
           userId={userId}
           errorMessage={errorMessage}
