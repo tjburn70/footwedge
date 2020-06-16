@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { getAccessToken, loginUser, registerUser } from '../actions/api';
 import PrivateRoute from './PrivateRoute';
 import { NavBar } from './NavBar';
