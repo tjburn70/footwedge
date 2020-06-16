@@ -14,12 +14,12 @@ export default function PastGolfRound({ round, stats, golfCourse, teeBox, dispat
   const [open, setOpen] = useState(false);
 
   const golfCourseName = () => {
-    if (golfCourse == undefined) return;
+    if (golfCourse === undefined) return;
     return golfCourse.name;
   }
 
   const teeBoxInfo = () => {
-    if (teeBox == undefined) return;
+    if (teeBox === undefined) return;
     return `${teeBox.tee_color} (${teeBox.distance} | ${teeBox.course_rating})`;
   }
 
