@@ -1,4 +1,6 @@
 import { combineReducers } from 'redux';
+import { rounds } from './playerRounds';
+import { stats } from './roundStats';
 
 import {
   LOGIN_REQUEST,
@@ -11,16 +13,13 @@ import {
   ACCESS_TOKEN_SUCCESS,
   ACCESS_TOKEN_FAILURE,
   LOGOUT_SUCCESS,
-  LOGOUT_REQUEST,
-  LOGOUT_FAILURE,
   GET_HANDICAP_SUCCESS,
 } from '../actions/api';
 
 
 const errorMessage = (state = null, action) => {
-  const { type, errorMessage } = action;
+  const { errorMessage } = action;
   if (errorMessage) {
-    console.log(errorMessage);
     return errorMessage;
   }
 
