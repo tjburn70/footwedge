@@ -1,6 +1,5 @@
 import axios from 'axios';
 import qs from "query-string";
-import { normalize, schema } from 'normalizr';
 import { getAccessToken, logoutUser } from '../actions/api';
 import { REFRESH_TOKEN_REQUIRED, ACCESS_TOKEN_REQUIRED } from './auth';
 
@@ -22,7 +21,7 @@ export const apiMiddleware = store => next => action => {
   }
 
   let { endpoint, httpMethod, body, query, headers } = apiAction;
-  const { types, schema } = apiAction;
+  const { types } = apiAction;
 
   if (body) {
     body = JSON.stringify(body);
