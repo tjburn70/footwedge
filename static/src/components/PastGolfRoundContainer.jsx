@@ -45,7 +45,7 @@ export default function PastGolfRoundContainer({ rounds, stats, dispatch }) {
         });
     }
     return () => mounted = false;
-  }, [rounds.byId]);
+  }, [roundMap]);
 
   const teeBox = (round) => {
     return teeBoxById[round.tee_box_id]
