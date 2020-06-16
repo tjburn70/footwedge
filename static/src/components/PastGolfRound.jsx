@@ -1,5 +1,3 @@
-import axios from 'axios';
-import { normalize, schema } from 'normalizr';
 import React, { useState }  from 'react';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
