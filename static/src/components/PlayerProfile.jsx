@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, Route } from 'react-router';
+import { Route } from 'react-router';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { EnterRound } from './EnterRound';
