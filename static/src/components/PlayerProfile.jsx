@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, Route } from 'react-router';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
