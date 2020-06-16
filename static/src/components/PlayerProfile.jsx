@@ -17,6 +17,7 @@ export const PlayerProfile = (props) => {
   } = props.data;
   const { path } = props.match;
   const dispatch = props.dispatch;
+  const numRounds = rounds.allIds.length;
 
   useEffect(() => {
     if (userId) {
@@ -28,7 +29,7 @@ export const PlayerProfile = (props) => {
     if (userId) {
       dispatch(getGolfRounds(userId));
     }
-  }, [userId, Object.keys(rounds).length, dispatch]);
+  }, [userId, numRounds, dispatch]);
 
   return (
     <div>
