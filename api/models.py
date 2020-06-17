@@ -363,6 +363,15 @@ class TeeBox(db.Model):
         """
         return TeeBox.query.filter_by(golf_course_id=golf_course_id).all()
 
+    @staticmethod
+    def get_by_id(tee_box_id: int):
+        """
+        Filter a TeeBox by id.
+        :param: golf_course_id
+        :return: TeeBox or None
+        """
+        return TeeBox.query.filter_by(id=tee_box_id).one_or_none()
+
 
 class Hole(db.Model):
     __tablename__ = "hole"
@@ -470,7 +479,7 @@ class GolfRound(db.Model):
         :param: user_id
         :return: List(GolfRound) or empty list
         """
-        return GolfRound.query.filter_by(user_id=user_id).all()
+        return GolfRound.query.filter_by(user_id=user_id).order_by(GolfRound.played_on.desc()).all()
 
     @staticmethod
     def get_by_id(golf_round_id):
