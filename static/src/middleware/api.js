@@ -63,7 +63,7 @@ export const apiMiddleware = store => next => action => {
       let errorMessage = null
       if (error.response) {
         errorMessage = error.response.data.message;
-        const statusCode = error.response.statusCode;
+        const statusCode = error.response.status;
         if (statusCode === 401 &&
             hasAuthHeaders(apiAction) &&
             !isRefreshAction(apiAction, getAccessToken())) {
