@@ -33,6 +33,7 @@ from api.helpers import (
     requires_json_content,
     throws_500_on_exception,
 )
+from api import tasks
 
 
 blueprint = Blueprint('user', __name__)
@@ -228,6 +229,13 @@ def golf_rounds(user_id):
 
     new_round = GolfRound(**golf_round.data)
     golf_round_id = new_round.save()
+
+    celery_kwargs = {
+        "queue": "handicap",
+    }
+    args = [user_id, ]
+    tasks.calculate_usga_handicap.apply_async(args, **celery_kwargs)
+
     result = golf_round_schema.dump(new_round)
     response_body = {
         'status': 'success',
