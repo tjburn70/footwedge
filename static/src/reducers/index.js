@@ -127,9 +127,9 @@ const handicap = (state = initialHandicapState, action) => {
   switch (action.type) {
     case GET_HANDICAP_SUCCESS:
       return Object.assign({}, state, {
-        index: action.payload.index,
-        authorizedAssociation: action.payload.authorized_association,
-        lastCalculated: action.payload.record_start_date,
+        index: action.payload.result.index,
+        authorizedAssociation: action.payload.result.authorized_association,
+        lastCalculated: action.payload.result.record_start_date,
       })
     default:
       return state
