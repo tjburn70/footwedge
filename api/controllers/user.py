@@ -18,12 +18,6 @@ from marshmallow import ValidationError
 
 from api.config import REFRESH_EXPIRES
 from api.controllers import auth
-from api.models import (
-    User,
-    Handicap,
-    GolfRound,
-    GolfRoundStats,
-)
 from api.schemas import (
     HandicapSchema,
     GolfRoundSchema,
@@ -34,6 +28,10 @@ from api.helpers import (
     throws_500_on_exception,
 )
 from api import tasks
+from api.repositories.user_repository import user_repo
+from api.repositories.handicap_repository import handicap_repo
+from api.repositories.golf_round_repository import golf_round_repo
+from api.repositories.golf_round_stats_repository import golf_round_stats_repo
 
 
 blueprint = Blueprint('user', __name__)
@@ -55,13 +53,13 @@ def register_user():
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    if User.get_by_email(email):
+    if user_repo.get_by_email(email):
         error_message = f"A user with email: '{email}' already exists!"
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    new_user = User(**request_body)
-    user_id = new_user.save()
+    new_user = user_repo.create(data=request_body)
+    user_id = new_user.id
     access_token = create_access_token(identity=user_id)
     refresh_token = create_refresh_token(identity=user_id)
     refresh_jti = get_jti(encoded_token=refresh_token)
@@ -95,7 +93,7 @@ def login():
         response_body = {"message": error_message}
         return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
 
-    current_user = User.get_by_email(email)
+    current_user = user_repo.get_by_email(email=email)
     if not current_user:
         error_message = f"No user exists with email: '{email}'"
         response_body = {"message": error_message}
@@ -164,7 +162,7 @@ def handicap(user_id):
     if request.method == 'GET':
         start_date = request.args.get('start')
         if start_date:
-            handicaps = Handicap.get_by_date(user_id=user_id, start_date=start_date)
+            handicaps = handicap_repo.get_by_date(user_id=user_id, start_date=start_date)
             results = handicap_schema.dump(handicaps, many=True)
             response_body = {
                 'status': 'success',
@@ -172,7 +170,7 @@ def handicap(user_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
         else:
-            current_handicap = Handicap.get_active(user_id=user_id)
+            current_handicap = handicap_repo.get_active(user_id=user_id)
             result = handicap_schema.dump(current_handicap)
             response_body = {
                 'status': 'success',
@@ -180,12 +178,12 @@ def handicap(user_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
-    current_handicap = Handicap.get_active(user_id=user_id)
-    current_handicap.close()
+    current_handicap = handicap_repo.get_active(user_id=user_id)
+    handicap_repo.close(current_handicap)
     request_body = request.get_json()
     request_body['user_id'] = user_id
     try:
-        data = handicap_schema.load(request_body)
+        handicap_data = handicap_schema.load(request_body).data
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -193,8 +191,7 @@ def handicap(user_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    new_handicap = Handicap(**data)
-    new_handicap.save()
+    handicap_repo.create(data=handicap_data)
     response_body = {
         'status': 'success',
         'message': f"Handicap was successfully added for user_id: '{user_id}'",
@@ -208,7 +205,7 @@ def handicap(user_id):
 @jwt_required
 def golf_rounds(user_id):
     if request.method == 'GET':
-        rounds = GolfRound.get_by_user_id(user_id=user_id)
+        rounds = golf_round_repo.get_by_user_id(user_id=user_id)
         results = golf_round_schema.dump(rounds, many=True)
         response_body = {
             'status': 'success',
@@ -219,7 +216,7 @@ def golf_rounds(user_id):
     request_body = request.get_json()
     request_body['user_id'] = user_id
     try:
-        golf_round = golf_round_schema.load(request_body)
+        golf_round_data = golf_round_schema.load(request_body).data
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -227,8 +224,8 @@ def golf_rounds(user_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    new_round = GolfRound(**golf_round.data)
-    golf_round_id = new_round.save()
+    new_round = golf_round_repo.create(data=golf_round_data)
+    golf_round_id = new_round.id
 
     celery_kwargs = {
         "queue": "handicap",
@@ -251,7 +248,7 @@ def golf_rounds(user_id):
 @jwt_required
 def golf_round_stats(user_id, golf_round_id):
     if request.method == 'GET':
-        round_stats = GolfRoundStats.get_by_golf_round_id(golf_round_id=golf_round_id)
+        round_stats = golf_round_stats_repo.get_by_golf_round_id(golf_round_id=golf_round_id)
         results = golf_round_stats_schema.dump(round_stats, many=True)
         response_body = {
             'status': 'success',
@@ -271,7 +268,7 @@ def golf_round_stats(user_id, golf_round_id):
     for hole_stat in request_body.get('round_stats'):
         hole_stat['golf_round_id'] = golf_round_id
         try:
-            result = golf_round_stats_schema.load(hole_stat)
+            round_stat_data = golf_round_stats_schema.load(hole_stat).data
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
@@ -279,9 +276,9 @@ def golf_round_stats(user_id, golf_round_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        round_stats.append(GolfRoundStats(**result.data))
+        round_stats.append(round_stat_data)
 
-    GolfRoundStats.bulk_save(round_stats=round_stats)
+    golf_round_stats_repo.bulk_create(records=round_stats)
     results = golf_round_stats_schema.dump(round_stats, many=True)
     message = f"GolfRoundStats records were successfully added for GolfRound id: '{golf_round_id}'"
     response_body = {
