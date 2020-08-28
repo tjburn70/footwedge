@@ -6,6 +6,7 @@ from api import version_info
 from api import routes, config
 from api.controllers.auth import jwt
 from api import models
+from api.database import db_session
 
 
 migrate = Migrate()
@@ -24,6 +25,11 @@ def create_app(app_settings):
 
 app = create_app(config.FlaskConfig)
 CORS(app)
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
 
 @app.route('/api')
