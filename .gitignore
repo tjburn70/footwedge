@@ -8,3 +8,4 @@ static/node_modules
 /api/migrations/__pycache__
 /api/migrations/versions/__pycache__
 /api/controllers/__pycache__
+/api/repositories/__pycache__
