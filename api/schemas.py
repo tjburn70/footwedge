@@ -87,3 +87,18 @@ class GolfRoundSchema(Schema):
     stats = fields.List(fields.Nested(GolfRoundStatsSchema))
     created_ts = fields.DateTime(dump_only=True)
     touched_ts = fields.DateTime()
+
+
+class UserSchema(Schema):
+    id = fields.Int(dump_only=True)
+    email = fields.Str(required=True)
+    password_hash = fields.Str(required=True)
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    middle_initial = fields.Str()
+    phone_number = fields.Str()
+    date_of_birth = fields.Date()
+    gender = fields.Str()
+    role = fields.Str()
+    created_ts = fields.DateTime(dump_only=True)
+    touched_ts = fields.DateTime()
