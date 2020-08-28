@@ -8,10 +8,8 @@ from flask import (
 )
 from marshmallow import ValidationError
 
-from api.models import (
-    GolfClub,
-    GolfCourse,
-)
+from api.repositories.golf_club_repository import golf_club_repo
+from api.repositories.golf_course_repository import golf_course_repo
 from api.schemas import (
     GolfClubSchema,
     GolfCourseSchema,
@@ -32,7 +30,7 @@ golf_course_schema = GolfCourseSchema()
 @throws_500_on_exception
 def golf_clubs():
     if request.method == 'GET':
-        clubs = GolfClub.get_all()
+        clubs = golf_club_repo.get_all()
         results = golf_club_schema.dump(clubs, many=True)
         response_body = {
             'status': 'success',
@@ -40,9 +38,9 @@ def golf_clubs():
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
+    request_body = request.get_json()
     try:
-        request_body = request.get_json()
-        result = golf_club_schema.load(request_body)
+        golf_club_data = golf_club_schema.load(request_body).data
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -50,8 +48,8 @@ def golf_clubs():
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    club = GolfClub(**result.data)
-    club_id = club.save()
+    club = golf_club_repo.create(data=golf_club_data)
+    club_id = club.id
     response_body = {
         'status': 'success',
         'message': f"Golf Club: '{club.name}' was successfully added",
@@ -63,7 +61,7 @@ def golf_clubs():
 @blueprint.route('/<int:golf_club_id>', methods=['GET'])
 @throws_500_on_exception
 def golf_clubs_by_id(golf_club_id):
-    golf_club = GolfClub.get_by_id(golf_club_id=golf_club_id)
+    golf_club = golf_club_repo.get(golf_club_id)
     if not golf_club:
         response_body = {
             'status': 'fail',
@@ -83,7 +81,7 @@ def golf_clubs_by_id(golf_club_id):
 @throws_500_on_exception
 def golf_courses(golf_club_id):
     if request.method == 'GET':
-        courses = GolfCourse.get_by_golf_club_id(golf_club_id=golf_club_id)
+        courses = golf_course_repo.get_by_golf_club_id(golf_club_id=golf_club_id)
         if not courses:
             response_body = {
                 'status': 'fail',
@@ -98,10 +96,10 @@ def golf_courses(golf_club_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
+    request_body = request.get_json()
+    request_body['golf_club_id'] = golf_club_id
     try:
-        request_body = request.get_json()
-        request_body['golf_club_id'] = golf_club_id
-        result = golf_course_schema.load(request_body)
+        golf_course_data = golf_course_schema.load(request_body).data
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -109,8 +107,8 @@ def golf_courses(golf_club_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    course = GolfCourse(**result.data)
-    course_id = course.save()
+    course = golf_course_repo.create(data=golf_course_data)
+    course_id = course.id
     response_body = {
         'status': 'success',
         'message': f"Golf Course: '{course.name}' was successfully added",
