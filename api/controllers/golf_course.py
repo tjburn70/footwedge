@@ -8,11 +8,9 @@ from flask import (
 )
 from marshmallow import ValidationError
 
-from api.models import (
-    GolfCourse,
-    TeeBox,
-    Hole,
-)
+from api.repositories.golf_course_repository import golf_course_repo
+from api.repositories.tee_box_repository import tee_box_repo
+from api.repositories.hole_repository import hole_repo
 from api.schemas import (
     GolfCourseSchema,
     TeeBoxSchema,
@@ -35,7 +33,7 @@ hole_schema = HoleSchema()
 def golf_courses():
     ids = request.args.getlist('id')
     if ids:
-        courses = GolfCourse.get_by_ids(golf_course_ids=ids)
+        courses = golf_course_repo.get_by_ids(ids=ids)
         results = golf_course_schema.dump(courses, many=True)
         response_body = {
             'status': 'success',
@@ -43,7 +41,7 @@ def golf_courses():
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
-    courses = GolfCourse.get_all()
+    courses = golf_course_repo.get_all()
     results = golf_course_schema.dump(courses, many=True)
     response_body = {
         'status': 'success',
@@ -55,7 +53,7 @@ def golf_courses():
 @blueprint.route('/<int:golf_course_id>', methods=['GET'])
 @throws_500_on_exception
 def golf_courses_by_id(golf_course_id):
-    golf_course = GolfCourse.get_by_id(golf_course_id=golf_course_id)
+    golf_course = golf_course_repo.get(golf_course_id)
     if not golf_course:
         response_body = {
             'status': 'fail',
@@ -76,7 +74,7 @@ def golf_courses_by_id(golf_course_id):
 @throws_500_on_exception
 def tee_boxes(golf_course_id):
     if request.method == 'GET':
-        boxes = TeeBox.get_by_golf_course_id(golf_course_id=golf_course_id)
+        boxes = tee_box_repo.get_by_golf_course_id(golf_course_id=golf_course_id)
         if not boxes:
             response_body = {
                 'status': 'fail',
@@ -91,10 +89,10 @@ def tee_boxes(golf_course_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
+    request_body = request.get_json()
+    request_body['golf_course_id'] = golf_course_id
     try:
-        request_body = request.get_json()
-        request_body['golf_course_id'] = golf_course_id
-        result = tee_box_schema.load(request_body)
+        tee_box_data = tee_box_schema.load(request_body).data
     except ValidationError as e:
         response_body = {
             'status': 'fail',
@@ -102,8 +100,8 @@ def tee_boxes(golf_course_id):
         }
         return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-    tee_box = TeeBox(**result.data)
-    tee_box_id = tee_box.save()
+    tee_box = tee_box_repo.create(data=tee_box_data)
+    tee_box_id = tee_box.id
     response_body = {
         'status': 'success',
         'message': f"Tee Box: '{tee_box.tee_color}' was successfully added",
@@ -117,7 +115,7 @@ def tee_boxes(golf_course_id):
 @throws_500_on_exception
 def holes(golf_course_id, tee_box_id):
     if request.method == 'GET':
-        hole_records = Hole.get_by_tee_box_id(tee_box_id=tee_box_id)
+        hole_records = hole_repo.get_by_tee_box_id(tee_box_id=tee_box_id)
         if not hole_records:
             response_body = {
                 'status': 'fail',
@@ -145,7 +143,7 @@ def holes(golf_course_id, tee_box_id):
         hole['golf_course_id'] = golf_course_id
         hole['tee_box_id'] = tee_box_id
         try:
-            result = hole_schema.load(hole)
+            hole_data = hole_schema.load(hole).data
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
@@ -153,9 +151,9 @@ def holes(golf_course_id, tee_box_id):
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        holes_data.append(Hole(**result.data))
+        holes_data.append(hole_data)
 
-    Hole.bulk_save(holes=holes_data)
+    hole_repo.bulk_create(records=holes_data)
 
     message = "Hole records were successfully added for" \
               f" GolfCourse id: {golf_course_id} and TeeBox id: {tee_box_id}"
