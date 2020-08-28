@@ -1,15 +1,10 @@
 from flask import Flask
-from flask_migrate import Migrate
 from flask_cors import CORS
 
 from api import version_info
 from api import routes, config
 from api.controllers.auth import jwt
-from api import models
 from api.database import db_session
-
-
-migrate = Migrate()
 
 
 def create_app(app_settings):
@@ -17,8 +12,6 @@ def create_app(app_settings):
     flask_app = Flask(app_name)
     flask_app.config.from_object(app_settings)
     jwt.init_app(app=flask_app)
-    models.db.init_app(app=flask_app)
-    migrate.init_app(app=flask_app, db=models.db)
     routes.register(flask_app)
     return flask_app
 
