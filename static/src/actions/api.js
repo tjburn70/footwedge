@@ -140,8 +140,8 @@ export const GET_HANDICAP_REQUEST = 'FETCH_HANDICAP_REQUEST';
 export const GET_HANDICAP_SUCCESS = 'FETCH_HANDICAP_SUCCESS';
 export const GET_HANDICAP_FAILURE = 'FETCH_HANDICAP_FAILURE';
 
-export const getHandicap = (userId) => {
-  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/handicaps`;
+export const getHandicap = () => {
+  const endPoint = 'http://127.0.0.1:8000/api/handicaps/';
   return {
     [ACCESS_TOKEN_REQUIRED]: {
       endpoint: endPoint,
