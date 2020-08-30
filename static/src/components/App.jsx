@@ -54,6 +54,7 @@ class App extends React.Component {
               dispatch={dispatch}
               data={{
                 userId: currentUser,
+                accessToken: auth.accessToken,
                 errorMessage: errorMessage,
                 handicap: handicap,
                 rounds: rounds,
