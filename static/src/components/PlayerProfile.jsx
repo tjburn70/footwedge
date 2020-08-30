@@ -10,6 +10,7 @@ import { enterGolfRound, getHandicap, getGolfRounds } from '../actions/api';
 export const PlayerProfile = (props) => {
   const {
     userId,
+    accessToken,
     errorMessage,
     handicap,
     rounds,
@@ -20,10 +21,10 @@ export const PlayerProfile = (props) => {
   const numRounds = rounds.allIds.length;
 
   useEffect(() => {
-    if (userId) {
-      dispatch(getHandicap(userId));
+    if (accessToken) {
+      dispatch(getHandicap());
     }
-  }, [userId, handicap.index, dispatch]);
+  }, [accessToken, handicap.index, dispatch]);
 
   useEffect(() => {
     if (userId) {
