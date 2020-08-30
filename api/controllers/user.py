@@ -29,7 +29,6 @@ from api.helpers import (
 )
 from api import tasks
 from api.repositories.user_repository import user_repo
-from api.repositories.handicap_repository import handicap_repo
 from api.repositories.golf_round_repository import golf_round_repo
 from api.repositories.golf_round_stats_repository import golf_round_stats_repo
 
