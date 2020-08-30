@@ -49,7 +49,9 @@ set golf goals, and search golf courses
 * Redis
 * Elasticsearch
 * Node.js
-* Flask, Flask JWT, Flask SQLAlchemy, Flask Migrate
+* Flask, Flask JWT
+* SQLAlchemy
+* Alembic
 * React, Redux, React-Router
 
 
