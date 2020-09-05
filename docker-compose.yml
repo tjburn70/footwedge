@@ -16,16 +16,14 @@ services:
     container_name: footwedge-redis
     image: redis:5.0.9
     volumes:
-      - ./redis-data:/var/lib/redis
+      - ./redis-data:/data
     ports:
       - "6379:6379"
   elasticsearch:
     container_name: footwedge-search
     image: elasticsearch:7.5.2
     volumes:
-      - type: volume
-        source: elasticsearch
-        target: /usr/share/elasticsearch/data
+      - ./es-data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
     environment:
