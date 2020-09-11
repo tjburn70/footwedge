@@ -1,0 +1,69 @@
+service: handicap-service
+app: footwedge
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '1'
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: us-east-2
+  memorySize: 1024
+  role: arn:aws:iam::753710783959:role/footwedge_lambda
+
+# you can add statements to the Lambda function's IAM Role here
+#  iamRoleStatements:
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource:
+#        Fn::Join:
+#          - ""
+#          - - "arn:aws:s3:::"
+#            - "Ref" : "ServerlessDeploymentBucket"
+#            - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+package:
+  exclude:
+    - test/**
+
+functions:
+  calculateHandicap:
+    handler: handler.lambda_handler
+    events:
+      - sqs:
+         arn: arn:aws:sqs:us-east-2:753710783959:HandicapQueue
+         batchSize: 1
+    environment:
+      FOOTWEDGE_API_URL: "http://localhost:8000/api"
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    HandicapQueue:
+      Type: AWS::SQS::Queue
+      DependsOn: HandicapDeadLetterQueue
+      Properties:
+        QueueName: HandicapQueue
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - HandicapDeadLetterQueue
+              - "Arn"
+          maxReceiveCount: 5
+
+    HandicapDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: HandicapDeadLetterQueue
