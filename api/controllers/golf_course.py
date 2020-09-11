@@ -110,6 +110,26 @@ def tee_boxes(golf_course_id):
     return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
 
+# TODO: Consider diff controller?
+@blueprint.route('/tee-boxes/<int: tee_box_id>', methods=['GET'])
+@throws_500_on_exception
+def tee_box_by_id(tee_box_id):
+    box = tee_box_repo.get(id=tee_box_id)
+    if not box:
+        response_body = {
+            'status': 'fail',
+            'message': f"No TeeBox exists with id: '{tee_box_id}'"
+        }
+        return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+    data = tee_box_schema.dump(box).data
+    response_body = {
+        'status': 'success',
+        'result': data
+    }
+    return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+
 @blueprint.route('/<int:golf_course_id>/tee-boxes/<int:tee_box_id>/holes', methods=['GET', 'POST'])
 @requires_json_content
 @throws_500_on_exception
