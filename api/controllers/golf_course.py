@@ -111,7 +111,7 @@ def tee_boxes(golf_course_id):
 
 
 # TODO: Consider diff controller?
-@blueprint.route('/tee-boxes/<int: tee_box_id>', methods=['GET'])
+@blueprint.route('/tee-boxes/<int:tee_box_id>', methods=['GET'])
 @throws_500_on_exception
 def tee_box_by_id(tee_box_id):
     box = tee_box_repo.get(id=tee_box_id)
