@@ -12,6 +12,8 @@ provider:
   region: us-east-2
   memorySize: 1024
   role: arn:aws:iam::753710783959:role/footwedge_lambda
+  httpApi:
+    payload: '2.0'
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -48,12 +50,18 @@ functions:
     authorizers:
       someJwtAuthorizer:
         identitySource: $request.header.Authorization
-        issuerUrl: https://cognito-idp.${region}.amazonaws.com/${cognitoPoolId}
+        issuerUrl: https://cognito-idp.us-east-2.amazonaws.com/us-east-2_9tqIkGeQX
         audience:
-          - ${client1Id}
-          - ${client2Id}
+          - 1sghlmccivv851l2vdq5q67uii
     environment:
-      SEARCH_ENGINE_URI: ""
+      SEARCH_ENGINE_URI: "https://5f43e8044a25.ngrok.io"
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
 
 # you can add CloudFormation resource templates here
 #resources:
