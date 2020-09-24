@@ -1,8 +1,8 @@
 import os
-from typing import Optional
+from typing import List
 
 import uvicorn
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from elasticsearch import Elasticsearch
 
 from service import SearchService
@@ -39,21 +39,14 @@ async def delete_index(index: str):
 
 
 @app.get('/{index}')
-async def search_index(index: str, q: str, field: Optional[str] = None):
+async def search_index(index: str, q: str, query_type: str, field: List[str] = Query(...)):
     search_service = SearchService(es_client=es_client)
-    if field:
-        results = search_service.full_text_search(
-            index=index,
-            text=q,
-            field=field,
-        )
-    else:
-        results = search_service.full_text_search_multi(
-            index=index,
-            text=q,
-        )
-
-    return results
+    return search_service.full_text_search(
+        index=index,
+        query_type=query_type,
+        text=q,
+        fields=field,
+    )
 
 
 @app.get('/{index}/_doc')
