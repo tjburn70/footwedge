@@ -12,6 +12,5 @@ def lambda_handler(event, context):
     print(json.dumps(event))
     response = adapter.handler(event=event, context=context)
     print("Response: ", response)
-    print("Scope: ", response.scope)
 
     return response
