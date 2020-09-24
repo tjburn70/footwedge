@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import uvicorn
@@ -7,9 +8,9 @@ from elasticsearch import Elasticsearch
 from service import SearchService
 
 
-SEARCH_ENGINE_URL = "http://localhost:9200"
+SEARCH_ENGINE_URI = os.environ.get('SEARCH_ENGINE_URI')
 app = FastAPI()
-es_client = Elasticsearch(hosts=[SEARCH_ENGINE_URL])
+es_client = Elasticsearch(hosts=[SEARCH_ENGINE_URI])
 
 
 @app.get('/health')
