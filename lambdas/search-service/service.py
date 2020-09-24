@@ -95,23 +95,6 @@ class SearchService:
         )
         return results
 
-    def full_text_search_multi(self, index: str, text: str, fields: list = None):
-        if not fields:
-            fields = ['*']
-        body = {
-            'query': {
-                'multi_match': {
-                    'query': text,
-                    'fields': fields,
-                }
-            }
-        }
-        results = self.es_client.search(
-            index=index,
-            body=body
-        )
-        return results
-
     def get_document(self, index: str, document_id: str):
         try:
             results = self.es_client.get(index=index, id=document_id)
