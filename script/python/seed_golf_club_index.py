@@ -8,7 +8,7 @@ from api.repositories.golf_club_repository import golf_club_repo
 from api.repositories.golf_course_repository import golf_course_repo
 
 GOLF_CLUB_INDEX_NAME = 'golf_club'
-ES_API_URL_BASE = 'http://localhost:9200/'
+ES_API_URL_BASE = 'http://0.0.0.0:8001/'
 
 golf_club_schema = GolfClubSchema()
 golf_course_schema = GolfCourseSchema()
@@ -43,19 +43,23 @@ def create_index(index: str, nested_properties: List[str]):
             raise Exception(f"Failed to create the index: {index}")
 
 
-def build_documents() -> List[dict]:
-    documents = []
+def build_request_bodies() -> List[dict]:
+    request_bodies = []
     golf_clubs_records = golf_club_repo.get_all()
     for golf_club in golf_clubs_records:
         golf_course_records = golf_course_repo.get_by_golf_club_id(golf_club_id=golf_club.id)
         golf_course_data = golf_course_schema.dump(golf_course_records, many=True).data
         golf_club_data = golf_club_schema.dump(golf_club).data
         golf_club_data['golf_courses'] = golf_course_data
-        documents.append(golf_club_data)
+        request_body = {
+            "payload": golf_course_data,
+            "_id": golf_club_data["id"],
+        }
+        request_bodies.append(request_body)
 
     golf_course_repo.db_session.remove()
     golf_club_repo.db_session.remove()
-    return documents
+    return request_bodies
 
 
 def create_documents(target_index: str, request_bodies: List[dict]):
@@ -75,10 +79,10 @@ def seed():
         index=GOLF_CLUB_INDEX_NAME,
         nested_properties=nested_properties
     )
-    docs = build_documents()
+    request_bodies = build_request_bodies()
     create_documents(
         target_index=GOLF_CLUB_INDEX_NAME,
-        request_bodies=docs
+        request_bodies=request_bodies
     )
 
 
