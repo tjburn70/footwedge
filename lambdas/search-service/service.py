@@ -1,5 +1,45 @@
+from typing import List
+from enum import Enum
+
 import elasticsearch
 from fastapi import HTTPException
+
+
+class QueryType(str, Enum):
+    MATCH = "match"
+    MULTI_MATCH = "multi_match"
+    WILDCARD = "wildcard"
+
+
+def search_query_factory(query_type: str, fields: List[str], text: str) -> dict:
+    if query_type == QueryType.MATCH:
+        field = fields[0]
+        query = {
+            query_type: {
+                field: {'query': text}
+            }
+        }
+        return query
+    elif query_type == QueryType.MULTI_MATCH:
+        query = {
+            query_type: {
+                'query': text,
+                'fields': fields or ['*'],
+            }
+        }
+        return query
+    elif query_type == QueryType.WILDCARD:
+        field = fields[0]
+        query = {
+            query_type: {
+                field: {
+                    "value": f"{text}*",
+                    "boost": 1.0,
+                    "rewrite": "constant_score"
+                }
+            }
+        }
+        return query
 
 
 class SearchService:
@@ -37,13 +77,17 @@ class SearchService:
         except elasticsearch.exceptions.NotFoundError as exc:
             raise HTTPException(status_code=404, detail=exc.info)
 
-    def full_text_search(self, index: str, field: str, text: str):
+    def full_text_search(self, index: str, query_type: str, text: str, fields: List[str]):
+        query = search_query_factory(
+            query_type=query_type,
+            fields=fields,
+            text=text,
+        )
+        if not query:
+            error_message = f"Unable to determine query_type: '{query_type}'"
+            raise HTTPException(status_code=400, detail=error_message)
         body = {
-            'query': {
-                'match': {
-                    field: {'query': text}
-                }
-            }
+            "query": query
         }
         results = self.es_client.search(
             index=index,
@@ -93,7 +137,6 @@ class SearchService:
 
     def add_to_nested_property(self, index: str, document_id: str, nested_property: str, nested_property_body: dict):
         nested_property_singular = nested_property.rstrip("s")
-        print("nested_property_singular: ", nested_property_singular)
         script = f"ctx._source.{nested_property}.add(params.{nested_property_singular})"
         body = {
             "script": {
@@ -108,8 +151,6 @@ class SearchService:
             id=document_id,
             body=body
         )
-        print(type(resp))
-        print(resp)
         return resp
 
     def delete_document(self, index: str, document_id: str):
