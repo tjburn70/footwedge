@@ -137,4 +137,8 @@ class SearchService:
         return resp
 
     def delete_document(self, index: str, document_id: str):
-        pass
+        resp = self.es_client.delete(
+            index=index,
+            id=document_id,
+        )
+        return resp
