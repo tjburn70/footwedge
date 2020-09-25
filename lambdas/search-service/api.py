@@ -80,5 +80,10 @@ async def update_doc_nested_property(index: str, doc_id: str, nested_property: s
     )
 
 
+@app.delete('/{index}/_doc/{doc_id}')
+async def delete_document(index: str, doc_id: str):
+    return SearchService(es_client=es_client).delete_document(index=index, document_id=doc_id)
+
+
 if __name__ == "__main__":
     uvicorn.run('api:app', host='0.0.0.0', port=8001, reload=True)
