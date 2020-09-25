@@ -48,6 +48,13 @@ functions:
     environment:
       FOOTWEDGE_API_URL: "http://localhost:8000/api"
 
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
 # you can add CloudFormation resource templates here
 resources:
   Resources:
