@@ -10,20 +10,6 @@ class HandicapSchema(Schema):
     record_end_date = fields.DateTime()
 
 
-class GolfClubSchema(Schema):
-    id = fields.Int(dump_only=True)
-    name = fields.Str(required=True)
-    address = fields.Str()
-    city = fields.Str()
-    state_code = fields.Str()
-    county = fields.Str()
-    zip_code = fields.Str()
-    phone_number = fields.Str()
-    email = fields.Str()
-    created_ts = fields.DateTime(dump_only=True)
-    touched_ts = fields.DateTime()
-
-
 class TeeBoxSchema(Schema):
     id = fields.Int(dump_only=True)
     golf_course_id = fields.Int(required=True)
@@ -43,6 +29,21 @@ class GolfCourseSchema(Schema):
     name = fields.Str(required=True)
     num_holes = fields.Int()
     tee_boxes = fields.List(fields.Nested(TeeBoxSchema))
+    created_ts = fields.DateTime(dump_only=True)
+    touched_ts = fields.DateTime()
+
+
+class GolfClubSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str(required=True)
+    address = fields.Str()
+    city = fields.Str()
+    state_code = fields.Str()
+    county = fields.Str()
+    zip_code = fields.Str()
+    phone_number = fields.Str()
+    email = fields.Str()
+    golf_courses = fields.List(fields.Nested(GolfCourseSchema))
     created_ts = fields.DateTime(dump_only=True)
     touched_ts = fields.DateTime()
 
