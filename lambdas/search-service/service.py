@@ -93,7 +93,7 @@ class SearchService:
             index=index,
             body=body
         )
-        return results
+        return results["hits"]
 
     def get_document(self, index: str, document_id: str):
         try:
