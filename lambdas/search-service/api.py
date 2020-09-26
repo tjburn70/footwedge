@@ -3,6 +3,7 @@ from typing import List
 
 import uvicorn
 from fastapi import FastAPI, Body, Query
+from fastapi.middleware.cors import CORSMiddleware
 from elasticsearch import Elasticsearch
 
 from service import SearchService
@@ -10,6 +11,16 @@ from service import SearchService
 
 SEARCH_ENGINE_URI = os.environ.get('SEARCH_ENGINE_URI')
 app = FastAPI()
+origins = [
+    "http://localhost:3000"
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 es_client = Elasticsearch(hosts=[SEARCH_ENGINE_URI])
 
 
