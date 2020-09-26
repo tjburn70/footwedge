@@ -11,11 +11,13 @@ function sleep(delay = 0) {
   });
 }
 
-const URL_ROOT = 'http://127.0.0.1:8000/api/';
+const SEARCH_API_BASE_URL = 'http://0.0.0.0:8001';
 
 export default function SearchBar({ label, targetIndex, handleSelect, processResults }) {
-  const path = ''.concat('search/', targetIndex);
-  const url = new URL(path, URL_ROOT);
+  const path = ''.concat('/', targetIndex);
+  const url = new URL(path, SEARCH_API_BASE_URL);
+  url.searchParams.append('query_type', 'wildcard');
+  url.searchParams.append('field', 'name');
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const loading = open && options.length === 0;
@@ -44,7 +46,7 @@ export default function SearchBar({ label, targetIndex, handleSelect, processRes
       url.searchParams.set('q', value);
         axios.get(url)
           .then(res => {
-            let searchResults = res.data.results;
+            let searchResults = res.data.hits;
             let results = searchResults.map(result => (
               result._source
             ));
