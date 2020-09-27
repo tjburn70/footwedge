@@ -7,6 +7,11 @@ import { NavBar } from './NavBar';
 import { Login } from './Login';
 import { RegisterUser } from './RegisterUser';
 import { PlayerProfile } from './PlayerProfile';
+import { Dashboard } from './Dashboard';
+import { GolfRounds } from './GolfRounds';
+import { EnterRound } from './EnterRound';
+import { InfoPage } from './InfoPage';
+import { MenuOptions } from './MenuOptions';
 
 
 class App extends React.Component {
@@ -33,6 +38,7 @@ class App extends React.Component {
       <div>
         <div>
           <NavBar isAuthenticated={auth.isAuthenticated} dispatch={dispatch}/>
+          <MenuOptions />
           <Switch>
             <Route path="/login">
               <Login
@@ -47,9 +53,22 @@ class App extends React.Component {
                 errorMessage={errorMessage}
               />
             </Route>
+            <Route path='/info'>
+              <InfoPage />
+            </Route>
             <PrivateRoute
               path='/player-profile'
               component={PlayerProfile}
+              isAuthenticated={auth.isAuthenticated}
+              dispatch={dispatch}
+              data={{
+                accessToken: auth.accessToken,
+                handicap: handicap,
+              }}>
+            </PrivateRoute>
+            <PrivateRoute
+              path='/dashboard'
+              component={Dashboard}
               isAuthenticated={auth.isAuthenticated}
               dispatch={dispatch}
               data={{
@@ -59,6 +78,27 @@ class App extends React.Component {
                 handicap: handicap,
                 rounds: rounds,
                 stats: stats,
+              }}>
+            </PrivateRoute>
+            <PrivateRoute
+              path='/golf-rounds'
+              component={GolfRounds}
+              isAuthenticated={auth.isAuthenticated}
+              dispatch={dispatch}
+              data={{
+                rounds: rounds,
+                stats: stats,
+                userId: currentUser,
+              }}>
+            </PrivateRoute>
+            <PrivateRoute
+              path='/enter-round'
+              component={EnterRound}
+              isAuthenticated={auth.isAuthenticated}
+              dispatch={dispatch}
+              data={{
+                userId: currentUser,
+                errorMessage: errorMessage,
               }}>
             </PrivateRoute>
           </Switch>
