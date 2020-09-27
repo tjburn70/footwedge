@@ -20,6 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchBar from './SearchBar';
+import { enterGolfRound } from '../actions/api';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +50,8 @@ const useStyles = makeStyles((theme) => ({
 const URL_ROOT = 'http://127.0.0.1:8000/api/golf-courses/';
 
 export const EnterRound = (props) => {
+  const { userId, errorMessage } = props.data;
+  const dispatch = props.dispatch;
   const [golfCourse, setGolfCourse] = useState(null);
   const [teeBoxes, setTeeBoxes] = useState([]);
   const [teeBox, setTeeBox] = useState("");
@@ -73,18 +76,16 @@ export const EnterRound = (props) => {
     }
   }, [golfCourse]);
 
-  const { enterGolfRound, userId, errorMessage } = props;
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    enterGolfRound(userId, {
+    dispatch(enterGolfRound(userId, {
       golfCourseId: golfCourse.golf_course_id,
       teeBoxId: teeBox.id,
       roundType: roundType,
       totalScore: totalScore,
       towardsHandicap: towardsHandicap,
       playedOn: playedOn,
-    });
+    }));
   }
 
   const processSearchResults = (results) => {
