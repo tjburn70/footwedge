@@ -103,8 +103,8 @@ export const ENTER_ROUND_REQUEST = 'ENTER_ROUND_REQUEST';
 export const ENTER_ROUND_SUCCESS = 'ENTER_ROUND_SUCCESS';
 export const ENTER_ROUND_FAILURE = 'ENTER_ROUND_FAILURE';
 
-export const enterGolfRound = (userId, data) => {
-  const endPoint = 'http://127.0.0.1:8000/api/user/'+userId+'/golf-rounds';
+export const enterGolfRound = (data) => {
+  const endPoint = 'http://127.0.0.1:8000/api/golf-rounds/';
   const {
     golfCourseId,
     teeBoxId,

@@ -97,7 +97,6 @@ class App extends React.Component {
               isAuthenticated={auth.isAuthenticated}
               dispatch={dispatch}
               data={{
-                userId: currentUser,
                 errorMessage: errorMessage,
               }}>
             </PrivateRoute>

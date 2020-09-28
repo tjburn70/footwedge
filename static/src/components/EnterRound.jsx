@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const URL_ROOT = 'http://127.0.0.1:8000/api/golf-courses/';
 
 export const EnterRound = (props) => {
-  const { userId, errorMessage } = props.data;
+  const { errorMessage } = props.data;
   const dispatch = props.dispatch;
   const [golfCourse, setGolfCourse] = useState(null);
   const [teeBoxes, setTeeBoxes] = useState([]);
@@ -78,7 +78,7 @@ export const EnterRound = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(enterGolfRound(userId, {
+    dispatch(enterGolfRound({
       golfCourseId: golfCourse.golf_course_id,
       teeBoxId: teeBox.id,
       roundType: roundType,
