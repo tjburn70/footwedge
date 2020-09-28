@@ -8,16 +8,16 @@ export const GolfRounds = (props) => {
   const {
     rounds,
     stats,
-    userId,
+    hasAccessToken,
   } = props.data;
   const dispatch = props.dispatch;
   const numRounds = rounds.allIds.length;
 
   useEffect(() => {
-    if (userId) {
-      dispatch(getGolfRounds(userId));
+    if (hasAccessToken) {
+      dispatch(getGolfRounds());
     }
-  }, [userId, numRounds, dispatch]);
+  }, [hasAccessToken, numRounds, dispatch]);
 
   return (
     <div>
