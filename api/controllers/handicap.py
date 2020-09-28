@@ -1,17 +1,13 @@
-from http import HTTPStatus
-
 from flask import (
     Blueprint,
-    jsonify,
-    make_response,
     request,
 )
 from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
 )
-from marshmallow import ValidationError
 
+from api.services import handicap_service
 from api.schemas import HandicapSchema
 from api.helpers import (
     requires_json_content,
@@ -30,42 +26,16 @@ handicap_schema = HandicapSchema()
 @throws_500_on_exception
 def handicap():
     user_id = get_jwt_identity()
+    service = handicap_service.HandicapService(
+        repo=handicap_repo,
+        schema=handicap_schema,
+    )
     if request.method == 'GET':
         start_date = request.args.get('start')
         if start_date:
-            handicaps = handicap_repo.get_by_date(user_id=user_id, start_date=start_date)
-            results = handicap_schema.dump(handicaps, many=True)
-            response_body = {
-                'status': 'success',
-                'result': results.data,
-            }
-            return make_response(jsonify(response_body), HTTPStatus.OK.value)
-        else:
-            current_handicap = handicap_repo.get_active(user_id=user_id)
-            result = handicap_schema.dump(current_handicap)
-            response_body = {
-                'status': 'success',
-                'result': result.data,
-            }
-            return make_response(jsonify(response_body), HTTPStatus.OK.value)
+            return service.get_by_date(user_id=user_id, date=start_date)
 
-    current_handicap = handicap_repo.get_active(user_id=user_id)
-    handicap_repo.close(current_handicap)
-    request_body = request.get_json()
-    request_body['user_id'] = user_id
-    try:
-        handicap_data = handicap_schema.load(request_body).data
-    except ValidationError as e:
-        response_body = {
-            'status': 'fail',
-            'message': e.messages
-        }
-        return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+        return service.get_active(user_id=user_id)
 
-    handicap_repo.create(data=handicap_data)
-    response_body = {
-        'status': 'success',
-        'message': f"Handicap was successfully added for user_id: '{user_id}'",
-        'uri': f'/user/{user_id}/handicaps',
-    }
-    return make_response(jsonify(response_body), HTTPStatus.OK.value)
+    payload = request.get_json()
+    return service.add(user_id=user_id, payload=payload)
