@@ -88,7 +88,7 @@ class App extends React.Component {
               data={{
                 rounds: rounds,
                 stats: stats,
-                userId: currentUser,
+                hasAccessToken: auth.hasAccessToken,
               }}>
             </PrivateRoute>
             <PrivateRoute
