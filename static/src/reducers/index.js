@@ -49,6 +49,7 @@ const initialAuthState = {
   isFetching: false,
   isAuthenticated: localStorage.getItem('refresh_token') ? true : false,
   accessToken: '',
+  hasAccessToken: false,
 };
 
 const auth = (state = initialAuthState, action) => {
@@ -58,59 +59,69 @@ const auth = (state = initialAuthState, action) => {
         isFetching: true,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
         accessToken: action.payload.access_token,
+        hasAccessToken: true,
       })
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     case REGISTER_USER_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     case REGISTER_USER_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
         accessToken: action.payload.access_token,
+        hasAccessToken: true,
       })
     case REGISTER_USER_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     case ACCESS_TOKEN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
         accessToken: '',
+        hasAccessToken: false,
       })
     case ACCESS_TOKEN_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
         accessToken: action.payload.access_token,
+        hasAccessToken: true,
       })
     case ACCESS_TOKEN_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     case LOGOUT_SUCCESS:
       return Object.assign({}, state, {
         isFetching: true,
         isAuthenticated: false,
         accessToken: '',
+        hasAccessToken: false,
       })
     default:
       return state
