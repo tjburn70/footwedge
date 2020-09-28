@@ -160,8 +160,8 @@ export const GET_GOLF_ROUNDS_REQUEST = 'GET_GOLF_ROUNDS_REQUEST';
 export const GET_GOLF_ROUNDS_SUCCESS = 'GET_GOLF_ROUNDS_SUCCESS';
 export const GET_GOLF_ROUNDS_FAILURE = 'GET_GOLF_ROUNDS_FAILURE';
 
-export const getGolfRounds = (userId) => {
-  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/golf-rounds`;
+export const getGolfRounds = () => {
+  const endPoint = 'http://127.0.0.1:8000/api/golf-rounds/';
   return {
     [ACCESS_TOKEN_REQUIRED]: {
       endpoint: endPoint,
