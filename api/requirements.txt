@@ -5,7 +5,6 @@ celery==4.4.5
 certifi==2020.4.5.1
 chardet==3.0.4
 Click==7.0
-elasticsearch==7.5.1
 Flask==1.1.1
 Flask-Cors==3.0.8
 Flask-JWT-Extended==3.24.1
