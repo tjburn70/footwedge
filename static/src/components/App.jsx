@@ -62,7 +62,7 @@ class App extends React.Component {
               isAuthenticated={auth.isAuthenticated}
               dispatch={dispatch}
               data={{
-                accessToken: auth.accessToken,
+                hasAccessToken: auth.hasAccessToken,
                 handicap: handicap,
               }}>
             </PrivateRoute>

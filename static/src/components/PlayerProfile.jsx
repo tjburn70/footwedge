@@ -7,16 +7,16 @@ import { getHandicap } from '../actions/api';
 
 export const PlayerProfile = (props) => {
   const {
-    accessToken,
+    hasAccessToken,
     handicap,
   } = props.data;
   const dispatch = props.dispatch;
 
   useEffect(() => {
-    if (accessToken) {
+    if (hasAccessToken) {
       dispatch(getHandicap());
     }
-  }, [accessToken, handicap.index, dispatch]);
+  }, [hasAccessToken, handicap.index, dispatch]);
 
   return (
     <div>
