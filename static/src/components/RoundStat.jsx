@@ -40,7 +40,7 @@ export default function RoundStat({ round, stat, holeId, dispatch }) {
       greenSideSandShots: greenSideSandShots,
       totalPenalties: totalPenalties,
     };
-    dispatch(addRoundStat(round.user_id, round.id, holeId, data));
+    dispatch(addRoundStat(round.id, holeId, data));
     setOpen(false);
   }
 

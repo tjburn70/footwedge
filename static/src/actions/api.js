@@ -180,8 +180,8 @@ export const ADD_ROUND_STAT_REQUEST = 'ADD_ROUND_STAT_REQUEST';
 export const ADD_ROUND_STAT_SUCCESS = 'ADD_ROUND_STAT_SUCCESS';
 export const ADD_ROUND_STAT_FAILURE = 'ADD_ROUND_STAT_FAILURE';
 
-export const addRoundStat = (userId, roundId, holeId, data) => {
-  const endPoint = `http://127.0.0.1:8000/api/user/${userId}/golf-rounds/${roundId}/golf-round-stats`;
+export const addRoundStat = (roundId, holeId, data) => {
+  const endPoint = `http://127.0.0.1:8000/api/golf-rounds/${roundId}/golf-round-stats`;
   const {
     score,
     fairwayHit,
