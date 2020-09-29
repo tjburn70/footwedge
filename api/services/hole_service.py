@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import List
 
 from flask import (
     Response,
@@ -75,3 +76,7 @@ class HoleService:
             'uri': f'/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}/holes/',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    def map_hole_ids_to_par(self, hole_ids: List[int]) -> dict:
+        holes = self._hole_repo.get_by_ids(ids=hole_ids)
+        return {hole.id: hole.par for hole in holes}
