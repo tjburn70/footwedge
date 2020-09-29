@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import List
 
 from flask import (
     Response,
@@ -24,6 +25,15 @@ class GolfCourseService:
         response_body = {
             'status': 'success',
             'result': result.data
+        }
+        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    def get_by_ids(self, ids: List[int]) -> Response:
+        golf_courses = self._golf_course_repo.get_by_ids(ids=ids)
+        results = self._golf_course_schema.dump(golf_courses, many=True)
+        response_body = {
+            'status': 'success',
+            'result': results.data
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
 
@@ -65,6 +75,6 @@ class GolfCourseService:
         response_body = {
             'status': 'success',
             'message': f"Golf Course: '{golf_course.name}' was successfully added",
-            'uri': f'api/golf-clubs/{golf_club_id}/golf-courses/{golf_course.id}',
+            'uri': f'api/golf-courses/{golf_course.id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
