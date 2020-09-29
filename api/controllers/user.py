@@ -12,9 +12,7 @@ from flask_jwt_extended import (
     get_jti,
     get_raw_jwt,
     jwt_refresh_token_required,
-    jwt_required,
 )
-from marshmallow import ValidationError
 
 from api.config import REFRESH_EXPIRES
 from api.controllers import auth
@@ -27,10 +25,7 @@ from api.helpers import (
     requires_json_content,
     throws_500_on_exception,
 )
-from api import tasks
 from api.repositories.user_repository import user_repo
-from api.repositories.golf_round_repository import golf_round_repo
-from api.repositories.golf_round_stats_repository import golf_round_stats_repo
 
 
 blueprint = Blueprint('user', __name__)
