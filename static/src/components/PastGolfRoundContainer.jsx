@@ -22,12 +22,13 @@ export default function PastGolfRoundContainer({ rounds, stats, dispatch }) {
   const [golfCourseById, setGolfCourseById] = useState({});
   const [teeBoxById, setTeeBoxById] = useState({});
   const roundMap = rounds.byId;
+  const roundIds = [...rounds.allIds];
 
   useEffect(() => {
     let mounted = true;
     if (mounted && Object.keys(roundMap).length > 0) {
       const golfCourseUrl = new URL('golf-courses', API_URL_ROOT);
-      Object.keys(roundMap).map((roundId) => {
+      roundIds.map((roundId) => {
         const golfCourseId = roundMap[roundId].golf_course_id;
         golfCourseUrl.searchParams.append('id', golfCourseId);
       });
@@ -74,7 +75,7 @@ export default function PastGolfRoundContainer({ rounds, stats, dispatch }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(roundMap).map((roundId) => (
+            {roundIds.map((roundId) => (
               <PastGolfRound
                 key={roundId}
                 round={roundMap[roundId]}
