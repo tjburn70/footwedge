@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { rounds } from './playerRounds';
 import { stats } from './roundStats';
+import { statsSummary } from './roundStatsSummary';
 
 import {
   LOGIN_REQUEST,
@@ -154,6 +155,7 @@ const rootReducer = combineReducers({
   handicap,
   rounds,
   stats,
+  statsSummary,
 });
 
 export default rootReducer;
