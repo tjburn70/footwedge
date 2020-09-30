@@ -222,3 +222,23 @@ export const addRoundStat = (roundId, holeId, data) => {
     }
   }
 }
+
+export const GET_ROUND_STATS_SUMMARY_REQUEST = 'GET_ROUND_STATS_SUMMARY_REQUEST';
+export const GET_ROUND_STATS_SUMMARY_SUCCESS = 'GET_ROUND_STATS_SUMMARY_SUCCESS';
+export const GET_ROUND_STATS_SUMMARY_FAILURE = 'GET_ROUND_STATS_SUMMARY_FAILURE';
+
+export const getRoundStatsSummary = () => {
+  const endPoint = 'http://127.0.0.1:8000/api/golf-rounds/golf-round-stats/summary';
+  return {
+    [ACCESS_TOKEN_REQUIRED]: {
+      endpoint: endPoint,
+      httpMethod: 'GET',
+      headers: {},
+      types: [
+        GET_ROUND_STATS_SUMMARY_REQUEST,
+        GET_ROUND_STATS_SUMMARY_SUCCESS,
+        GET_ROUND_STATS_SUMMARY_FAILURE,
+      ]
+    }
+  }
+}
