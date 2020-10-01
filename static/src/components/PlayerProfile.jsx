@@ -25,7 +25,7 @@ export const PlayerProfile = (props) => {
           <Handicap
             handicapIndex={handicap.index}
             calculatedOn={handicap.lastCalculated}
-            enterRoundPath={`${path}/enter-round`}
+            enterRoundPath={'/enter-round'}
           />
         </Grid>
       </Container>
