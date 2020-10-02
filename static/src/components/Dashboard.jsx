@@ -10,7 +10,7 @@ export const Dashboard = (props) => {
     hasAccessToken,
   } = props.data;
   const dispatch = props.dispatch;
-  const numRounds = stats.allIds.length;
+  const numRounds = rounds.allIds.length;
   const numStats = stats.allIds.length;
 
   useEffect(() => {
