@@ -31,6 +31,7 @@ class App extends React.Component {
       handicap,
       rounds,
       stats,
+      statsSummary,
       errorMessage
     } = this.props;
 
@@ -72,12 +73,10 @@ class App extends React.Component {
               isAuthenticated={auth.isAuthenticated}
               dispatch={dispatch}
               data={{
-                userId: currentUser,
-                accessToken: auth.accessToken,
-                errorMessage: errorMessage,
-                handicap: handicap,
                 rounds: rounds,
                 stats: stats,
+                statsSummary: statsSummary,
+                hasAccessToken: auth.hasAccessToken,
               }}>
             </PrivateRoute>
             <PrivateRoute
@@ -116,6 +115,7 @@ const mapStateToProps = (state) => {
     handicap: state.handicap,
     rounds: state.rounds,
     stats: state.stats,
+    statsSummary: state.statsSummary,
   }
 };
 
