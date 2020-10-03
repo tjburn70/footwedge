@@ -45,6 +45,17 @@ def golf_rounds():
     return service.add(user_id=user_id, payload=payload)
 
 
+@blueprint.route('/<int:user_id>', methods=['GET'])
+@requires_json_content
+def golf_rounds_by_user_id(user_id):
+    # TODO: Implement Authentication for server to server auth
+    service = golf_round_service.GolfRoundService(
+        repo=golf_round_repo,
+        schema=golf_round_schema,
+    )
+    return service.get_by_user_id(user_id=user_id)
+
+
 @blueprint.route('/<int:golf_round_id>/golf-round-stats', methods=['GET', 'POST'])
 @requires_json_content
 @jwt_required
