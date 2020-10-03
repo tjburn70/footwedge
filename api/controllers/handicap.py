@@ -39,3 +39,16 @@ def handicap():
 
     payload = request.get_json()
     return service.add(user_id=user_id, payload=payload)
+
+
+@blueprint.route('/<int:user_id>', methods=['POST'])
+@requires_json_content
+@throws_500_on_exception
+def add_handicap_for_user(user_id):
+    # TODO: Implement Authentication for server to server auth
+    service = handicap_service.HandicapService(
+        repo=handicap_repo,
+        schema=handicap_schema,
+    )
+    payload = request.get_json()
+    return service.add(user_id=user_id, payload=payload)
