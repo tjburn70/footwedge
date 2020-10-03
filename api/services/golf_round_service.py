@@ -1,5 +1,7 @@
+import json
 from http import HTTPStatus
 
+import boto3
 from flask import (
     Response,
     make_response,
@@ -9,6 +11,10 @@ from marshmallow import ValidationError
 
 from api.repositories.golf_round_repository import GolfRoundRepository
 from api.schemas import GolfRoundSchema
+from api.settings import settings
+
+
+sqs_client = boto3.client('sqs')
 
 
 class GolfRoundService:
@@ -61,5 +67,8 @@ class GolfRoundService:
 
     @staticmethod
     def _queue_handicap_calculation(user_id: int):
-        # TODO: send user_id to sqs queue
-        pass
+        payload = json.dumps({"user_id": user_id}, default=str)
+        sqs_client.send_message(
+            QueueUrl=settings.HANDICAP_QUEUE_URL,
+            MessageBody=payload,
+        )
