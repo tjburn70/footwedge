@@ -10,15 +10,15 @@ import InfoIcon from '@material-ui/icons/Info';
 export const MenuOptions = () => {
   return (
     <div>
-    <ListItem
-      button
-      key="player-profile"
-      component={Link} to="/player-profile">
-      <ListItemIcon>
-          <PersonIcon />
-      </ListItemIcon>
-      <ListItemText primary="Player Profile" />
-    </ListItem>
+      <ListItem
+        button
+        key="player-profile"
+        component={Link} to="/player-profile">
+        <ListItemIcon>
+            <PersonIcon />
+        </ListItemIcon>
+        <ListItemText primary="Player Profile" />
+      </ListItem>
       <ListItem
         button
         key="dashboard"
