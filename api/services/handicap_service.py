@@ -38,7 +38,8 @@ class HandicapService:
 
     def _close_active(self, user_id: int):
         current_handicap = self._handicap_repo.get_active(user_id=user_id)
-        self._handicap_repo.close(current_handicap)
+        if current_handicap:
+            self._handicap_repo.close(current_handicap)
 
     def add(self, user_id: int, payload: dict) -> Response:
         self._close_active(user_id=user_id)
