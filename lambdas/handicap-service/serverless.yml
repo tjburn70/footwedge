@@ -34,19 +34,7 @@ provider:
 #    variable1: value1
 
 # you can add packaging information here
-package:
-  exclude:
-    - test/**
 
-functions:
-  calculateHandicap:
-    handler: handler.lambda_handler
-    events:
-      - sqs:
-         arn: arn:aws:sqs:us-east-2:753710783959:HandicapQueue
-         batchSize: 1
-    environment:
-      FOOTWEDGE_API_URL: "http://localhost:8000/api"
 
 plugins:
   - serverless-python-requirements
@@ -54,6 +42,23 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
+
+
+functions:
+  calculateHandicap:
+    handler: handler.lambda_handler
+    module: src
+    events:
+      - sqs:
+         arn: arn:aws:sqs:us-east-2:753710783959:HandicapQueue
+         batchSize: 1
+    environment:
+      FOOTWEDGE_API_URL: "http://localhost:8000/api"
+
+package:
+  individually: true
+  exclude:
+    - a/**
 
 # you can add CloudFormation resource templates here
 resources:
