@@ -75,12 +75,12 @@ class HandicapService:
             lowest_differentials = sorted_differentials[:sample_size]
             return lowest_differentials
 
-    def calculate_handicap_index(self, differentials) -> Decimal:
+    def calculate_handicap_index(self, differentials) -> float:
         lowest_differentials = self.determine_lowest_differential(
             differentials=differentials,
         )
         handicap_index = (sum(lowest_differentials) / len(lowest_differentials)) * Decimal('0.96')
-        return handicap_index
+        return round(handicap_index, 1)
 
     def post_handicap(self):
         ordered_golf_rounds = self._get_golf_rounds()
