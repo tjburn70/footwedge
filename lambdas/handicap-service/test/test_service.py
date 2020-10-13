@@ -1,12 +1,20 @@
 import random
 from decimal import Decimal
+from datetime import datetime
 from unittest.mock import MagicMock
 
 import pytest
 
 from lib.service import HandicapService
 from lib.footwedge_api import FootwedgeApi
-from lib.exceptions import HandicapServiceFailure, SampleSizeTooSmall
+from lib.models import (
+    GolfRound,
+    TeeBox,
+)
+from lib.exceptions import (
+    HandicapServiceFailure,
+    SampleSizeTooSmall,
+)
 
 
 @pytest.fixture
@@ -44,6 +52,49 @@ def random_differential_factory():
             differentials.append(differential)
         return differentials
     return _random_differential_factory
+
+
+@pytest.fixture
+def golf_round_factory():
+    def _golf_round_factory(tee_box_id: int):
+        golf_round_id = random.randrange(1, 1000, 1)
+        golf_course_id = random.randrange(1, 1000, 1)
+        user_id = random.randrange(1, 1000, 1)
+        gross_score = random.randrange(65, 120, 1)
+        towards_handicap = random.choice([True, False])
+        played_on = datetime.now().strftime('%Y-%m-%d')
+        return GolfRound(
+            id=golf_round_id,
+            golf_course_id=golf_course_id,
+            tee_box_id=tee_box_id,
+            user_id=user_id,
+            gross_score=gross_score,
+            towards_handicap=towards_handicap,
+            played_on=played_on,
+        )
+    return _golf_round_factory
+
+
+@pytest.fixture
+def tee_box():
+    tee_box_id = random.randrange(1, 1000, 1)
+    golf_course_id = random.randrange(1, 1000, 1)
+    tee_color = "Blue"
+    par = random.randrange(70, 73, 1)
+    distance = random.randrange(6000, 7550, 20)
+    unit = "yards"
+    course_rating = ""
+    slope = ""
+    return TeeBox(
+        id=tee_box_id,
+        golf_course_id=golf_course_id,
+        tee_color=tee_color,
+        par=par,
+        distance=distance,
+        unit=unit,
+        course_rating=course_rating,
+        slope=slope,
+    )
 
 
 class TestHandicapService:
@@ -206,6 +257,17 @@ class TestHandicapService:
 
     def test_calculate_handicap_index(self):
         pass
+
+    def test_post_handicap_not_enough_golf_rounds(self):
+        mock_footwedge_api_client = MagicMock()
+        mock_get_golf_rounds = MagicMock()
+        mock_get_tee_box = MagicMock()
+
+        handicap_service = HandicapService(
+            footwedge_api_client=FootwedgeApi(),
+            user_id=1,
+        )
+
 
     def test_post_handicap(self):
         pass
