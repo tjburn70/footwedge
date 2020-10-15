@@ -43,12 +43,12 @@ class HandicapService:
         return TeeBox(**result)
 
     @staticmethod
-    def calculate_differential(gross_score: int, course_rating: Decimal, slope: Decimal):
+    def calculate_differential(gross_score: int, course_rating: Decimal, slope: Decimal) -> Decimal:
         differential = ((gross_score - course_rating) * 113) / slope
         return differential
 
     @staticmethod
-    def determine_sample_size(num_rounds: int):
+    def determine_sample_size(num_rounds: int) -> int:
         if num_rounds < 5:
             error_message = 'sample size is too small, need atleast 5 rounds recorded'
             raise SampleSizeTooSmall(error_message)
@@ -75,11 +75,13 @@ class HandicapService:
             lowest_differentials = sorted_differentials[:sample_size]
             return lowest_differentials
 
-    def calculate_handicap_index(self, differentials) -> float:
+    def calculate_handicap_index(self, differentials) -> Decimal:
         lowest_differentials = self.determine_lowest_differential(
             differentials=differentials,
         )
         handicap_index = (sum(lowest_differentials) / len(lowest_differentials)) * Decimal('0.96')
+        print(handicap_index)
+        print(type(handicap_index))
         return round(handicap_index, 1)
 
     def post_handicap(self):
