@@ -193,6 +193,7 @@ class TestHandicapService:
             course_rating=course_rating,
             slope=slope,
         )
+        print(type(differential))
         assert expected_differential == differential, f"Expected the differential to be: {expected_differential}"
 
     def test_determine_sample_size_too_small(self):
@@ -326,8 +327,16 @@ class TestHandicapService:
         assert expected_differentials == actual_differentials, \
             f"The {expected_sample_size} lowest differentials should be returned"
 
-    def test_calculate_handicap_index(self):
-        pass
+    def test_calculate_handicap_index(self, sorted_score_differentials):
+        handicap_service = HandicapService(
+            footwedge_api_client=FootwedgeApi(),
+            user_id=1,
+        )
+        expected_handicap_index = Decimal('5.8')
+        handicap_index = handicap_service.calculate_handicap_index(differentials=sorted_score_differentials)
+
+        assert expected_handicap_index == handicap_index, \
+            f"For the differentials: {sorted_score_differentials}, expect a handicap of {expected_handicap_index}"
 
     def test_post_handicap_not_enough_golf_rounds(self, tee_box, golf_round_factory):
         golf_round = golf_round_factory(tee_box_id=tee_box.id)
