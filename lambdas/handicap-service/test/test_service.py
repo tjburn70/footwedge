@@ -83,8 +83,8 @@ def tee_box():
     par = random.randrange(70, 73, 1)
     distance = random.randrange(6000, 7550, 20)
     unit = "yards"
-    course_rating = ""
-    slope = ""
+    course_rating = 73.1
+    slope = 133.0
     return TeeBox(
         id=tee_box_id,
         golf_course_id=golf_course_id,
@@ -100,16 +100,87 @@ def tee_box():
 class TestHandicapService:
 
     def test_get_golf_rounds_bad_request(self):
-        pass
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = False
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        with pytest.raises(HandicapServiceFailure):
+            handicap_service._get_golf_rounds()
 
     def test_get_golf_rounds(self):
-        pass
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = True
+        golf_round_dict = {
+            'id': 1,
+            'golf_course_id': 1,
+            'tee_box_id': 1,
+            'user_id': 1,
+            'gross_score': 70,
+            'towards_handicap': True,
+            'played_on': datetime.now().strftime('%Y-%m-%d')
+        }
+        response_body = {
+            "result": [golf_round_dict]
+        }
+        mock_response.json.return_value = response_body
+        expected_golf_rounds = [GolfRound(**golf_round_dict)]
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        golf_rounds = handicap_service._get_golf_rounds()
+
+        assert expected_golf_rounds == golf_rounds
 
     def test_get_tee_box_bad_request(self):
-        pass
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = False
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        with pytest.raises(HandicapServiceFailure):
+            handicap_service._get_tee_box(tee_box_id=1)
 
     def test_get_tee_box(self):
-        pass
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = True
+        tee_box_dict = {
+            'id': 1,
+            'golf_course_id': 1,
+            'tee_color': "Blue",
+            'par': 72,
+            'distance': 6500,
+            'unit': "yards",
+            'course_rating': '72.6',
+            'slope': '127',
+        }
+        response_body = {
+            "result": tee_box_dict
+        }
+        mock_response.json.return_value = response_body
+        expected_tee_box = TeeBox(**tee_box_dict)
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        tee_box = handicap_service._get_tee_box(tee_box_id=1)
+
+        assert expected_tee_box == tee_box
 
     def test_calculate_differential(self):
         gross_score = 79
@@ -258,16 +329,42 @@ class TestHandicapService:
     def test_calculate_handicap_index(self):
         pass
 
-    def test_post_handicap_not_enough_golf_rounds(self):
+    def test_post_handicap_not_enough_golf_rounds(self, tee_box, golf_round_factory):
+        golf_round = golf_round_factory(tee_box_id=tee_box.id)
         mock_footwedge_api_client = MagicMock()
         mock_get_golf_rounds = MagicMock()
+        mock_get_golf_rounds.return_value = [golf_round]
         mock_get_tee_box = MagicMock()
+        mock_get_tee_box.return_value = tee_box
 
         handicap_service = HandicapService(
-            footwedge_api_client=FootwedgeApi(),
+            footwedge_api_client=mock_footwedge_api_client,
             user_id=1,
         )
+        handicap_service._get_golf_rounds = mock_get_golf_rounds
+        handicap_service._get_tee_box = mock_get_tee_box
 
+        handicap_service.post_handicap()
 
-    def test_post_handicap(self):
-        pass
+        assert not mock_footwedge_api_client.call.called, \
+            "If not enough golf_rounds for a user, do not expect the footwedge_api to be called"
+
+    def test_post_handicap(self, tee_box, golf_round_factory):
+        golf_round = golf_round_factory(tee_box_id=tee_box.id)
+        mock_footwedge_api_client = MagicMock()
+        mock_get_golf_rounds = MagicMock()
+        mock_get_golf_rounds.return_value = [golf_round, golf_round, golf_round, golf_round, golf_round]
+        mock_get_tee_box = MagicMock()
+        mock_get_tee_box.return_value = tee_box
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        handicap_service._get_golf_rounds = mock_get_golf_rounds
+        handicap_service._get_tee_box = mock_get_tee_box
+
+        handicap_service.post_handicap()
+
+        assert mock_footwedge_api_client.call.called, \
+            "If > 5 golf_rounds for a user, we expect the footwedge_api to be called"
