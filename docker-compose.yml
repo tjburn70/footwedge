@@ -29,24 +29,27 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx512m -Xms512m"
       discovery.type: single-node
-  api:
+  footwedge-api:
     container_name: footwedge-api
     image: footwedge-api:latest
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - $HOME/.aws:/root/.aws:ro
     depends_on:
       - postgres
       - redis
       - elasticsearch
-  client:
-    container_name: footwedge-client
-    image: footwedge-client:latest
+  footwedge-web-client:
+    container_name: footwedge-web-client
+    image: footwedge-web-client:latest
+    build:
+      context: ./static
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
-      - api
-
-volumes:
-  postgres:
-  redis:
-  elasticsearch:
+      - footwedge-api
