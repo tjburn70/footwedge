@@ -37,6 +37,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    environment:
+      - FOOTWEDGE_DATABASE_URI=postgresql://postgres:postgres@footwedge-db-pg/footwedge
+      - SEARCH_SERVICE_API_BASE_URL=http://localhost:8001
+      - HANDICAP_QUEUE_URL=https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+      - REDIS_URI=redis://footwedge-redis/0
     volumes:
       - $HOME/.aws:/root/.aws:ro
     depends_on:
