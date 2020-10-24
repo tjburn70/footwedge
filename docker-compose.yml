@@ -29,6 +29,20 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx512m -Xms512m"
       discovery.type: single-node
+  search-service-api:
+    container_name: search-service-api
+    image: search-service-api:latest
+    build:
+      context: ./lambdas/search-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - SEARCH_ENGINE_URI=http://footwedge-search
+    volumes:
+      - $HOME/.aws:/root/.aws:ro
+    depends_on:
+      - elasticsearch
   footwedge-api:
     container_name: footwedge-api
     image: footwedge-api:latest
