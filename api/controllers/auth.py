@@ -13,12 +13,13 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
 )
 
+from api.settings import settings
+
 BLACKLISTED_TOKEN_FLAG = '1'
 ACTIVE_TOKEN_FLAG = '0'
-AUTH_REDIS_URI = 'redis://localhost:6379/0'
 
 redis_client = redis.StrictRedis.from_url(
-    url=AUTH_REDIS_URI,
+    url=settings.REDIS_URI,
     decode_responses=True
 )
 blueprint = Blueprint('auth', __name__)
