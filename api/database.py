@@ -2,8 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-FOOTWEDGE_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/footwedge'
-engine = create_engine(FOOTWEDGE_DATABASE_URI)
+from api.settings import settings
+
+engine = create_engine(settings.FOOTWEDGE_DATABASE_URI)
 db_session = scoped_session(
     sessionmaker(
         autocommit=False,
