@@ -53,7 +53,7 @@ functions:
          arn: arn:aws:sqs:us-east-2:753710783959:HandicapQueue
          batchSize: 1
     environment:
-      FOOTWEDGE_API_URL: "http://localhost:8000/api"
+      FOOTWEDGE_API_URL: "https://bd12304c815b.ngrok.io/api"
 
 package:
   individually: true
