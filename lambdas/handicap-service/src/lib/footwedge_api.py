@@ -1,7 +1,9 @@
+import os
+
 import requests
 
 AUTH_SERVICE_TOKEN_URL = ""
-FOOTWEDGE_API_URL = "https://f9e29d0532f9.ngrok.io/api"
+FOOTWEDGE_API_URL = os.environ.get("FOOTWEDGE_API_URL")
 
 
 class FootwedgeApi:
