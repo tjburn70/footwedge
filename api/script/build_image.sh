@@ -2,7 +2,7 @@
 
 set -e pipefail
 
-IMAGE_NAME="footwedge-api:latest"
+IMAGE_NAME="footwedge:api-latest"
 
 main() {
   echo "building ${IMAGE_NAME} docker image"
