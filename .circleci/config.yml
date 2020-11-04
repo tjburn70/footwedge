@@ -14,14 +14,14 @@ jobs:
         name: footwedge-redis
       - image: elasticsearch:7.5.2
         name: footwedge-search
-      - image: search-service-api:latest
+      - image: tjburn70/footwedge:search-service-api-latest
         name: footwedge-search-api
         auth:
           username: tjburn70
           password: $DOCKERHUB_PASSWORD
         environment:
           SEARCH_ENGINE_URI: http://footwedge-search
-      - image: footwedge-api:latest
+      - image: tjburn70/footwedge:api-latest
         name: footwedge-api
         auth:
           username: tjburn70
