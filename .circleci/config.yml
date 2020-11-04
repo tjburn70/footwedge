@@ -51,5 +51,7 @@ jobs:
 workflows:
   main:
     jobs:
-      - build-api
+      - build-api:
+          context:
+            - footwedge
 
