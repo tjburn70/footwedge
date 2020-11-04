@@ -1,22 +1,55 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.2.1
-
 jobs:
-  build-and-test:
-    executor: python/default
+  build-api:
+    docker:
+      - image: circleci/python:3.7.6-buster
+      - image: postgres:11.7
+        name: footwedge-db-pg
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+          - POSTGRES_DB=footwedge
+      - image: redis:5.0.9
+        name: footwedge-redis
+      - image: elasticsearch:7.5.2
+        name: footwedge-search
+      - image: search-service-api:latest
+        name: footwedge-search-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          SEARCH_ENGINE_URI: http://footwedge-search
+      - image: footwedge-api:latest
+        name: footwedge-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+          REDIS_URI: redis://footwedge-redis/0
+
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run:
-          command: ./manage.py test
-          name: Test
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./api/requirements.txt
+      - run:
+          name: Run api unit tests
+          command: |
+            ./api/script/run_unit_tests.sh
+      - run:
+          name: Build and push Docker image
+          command: |
+            cd ./api && ./script/build_image.sh
 
 workflows:
   main:
     jobs:
-      - build-and-test
+      - build-api
 
