@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Run api unit tests
           command: |
-            ./api/script/run_unit_tests.sh
+            sh ./api/script/run_unit_tests.sh
       - run:
           name: Build and push Docker image
           command: |
