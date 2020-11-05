@@ -54,10 +54,10 @@ jobs:
             SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
             HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
             REDIS_URI: redis://footwedge-redis/0
-      - run:
-          name: Build and push Docker image
-          command: |
-            cd ./api && sh ./script/build_image.sh
+#      - run:
+#          name: Build and push Docker image
+#          command: |
+#            cd ./api && sh ./script/build_image.sh
 
 workflows:
   main:
