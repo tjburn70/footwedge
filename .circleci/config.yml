@@ -57,7 +57,7 @@ jobs:
       - run:
           name: Build and push Docker image
           command: |
-            cd ./api && ./script/build_image.sh
+            cd ./api && sh ./script/build_image.sh
 
 workflows:
   main:
