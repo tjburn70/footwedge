@@ -7,13 +7,16 @@ jobs:
       - image: postgres:11.7
         name: footwedge-db-pg
         environment:
-          - POSTGRES_USER=postgres
-          - POSTGRES_PASSWORD=postgres
-          - POSTGRES_DB=footwedge
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: footwedge
       - image: redis:5.0.9
         name: footwedge-redis
       - image: elasticsearch:7.5.2
         name: footwedge-search
+        environment:
+          ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+          discovery.type: single-node
       - image: tjburn70/footwedge:search-service-api-latest
         name: footwedge-search-api
         auth:
