@@ -34,9 +34,9 @@ jobs:
           SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
           HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
           REDIS_URI: redis://footwedge-redis/0
-          AWS_DEFAULT_REGION: $AWS_DEFAULT_REGION
-          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+          AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+          AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+          AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 
     steps:
       - checkout
