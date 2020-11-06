@@ -59,6 +59,8 @@ jobs:
           name: Build and push Docker image
           command: |
             cd ./api && sh ./script/build_image.sh
+            docker login --username tjburn70 --password $DOCKERHUB_PASSWORD
+            docker push tjburn70/footwedge:api-latest
 
 workflows:
   main:
