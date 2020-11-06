@@ -140,4 +140,7 @@ workflows:
       - build-handicap-service:
           context:
             - footwedge
+      - build-static:
+          context:
+            - footwedge
 
