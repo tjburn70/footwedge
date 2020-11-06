@@ -62,10 +62,57 @@ jobs:
             docker login --username tjburn70 --password $DOCKERHUB_PASSWORD
             docker push tjburn70/footwedge:api-latest
 
+  build-handicap-service:
+    docker:
+      - image: circleci/python:3.7.6-buster
+      - image: postgres:11.7
+        name: footwedge-db-pg
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: footwedge
+      - image: tjburn70/footwedge:api-latest
+        name: footwedge-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+          REDIS_URI: redis://footwedge-redis/0
+          AWS_DEFAULT_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/handicap-service/requirements.txt
+            pip install -r ./lambdas/handicap-service/requirements-dev.txt
+      - run:
+          name: Run api unit tests
+          command: |
+            sh ./lambdas/handicap-service/script/run_tests.sh
+          environment:
+            FOOTWEDGE_API_URL: http://localhost:8000/api
+
+      - setup_remote_docker
+      - run:
+          name: Deploy Lambda
+          command: |
+            cd ./lambdas/handicap-service && sh ./script/deploy.sh
+
 workflows:
   main:
     jobs:
       - build-api:
+          context:
+            - footwedge
+      - build-handicap-service:
           context:
             - footwedge
 
