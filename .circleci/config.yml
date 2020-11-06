@@ -106,6 +106,31 @@ jobs:
           command: |
             cd ./lambdas/handicap-service && sh ./script/deploy.sh
 
+  build-static:
+    docker:
+      - image: cimg/node:13.0
+
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: |
+            cd ./static && npm run build
+      - run:
+          name: Run api unit tests
+          command: |
+            sh ./lambdas/handicap-service/script/run_tests.sh
+          environment:
+            FOOTWEDGE_API_URL: http://localhost:8000/api
+
+      - setup_remote_docker
+      - run:
+          name: Build and push Docker image
+          command: |
+            cd ./static && sh ./script/build_image.sh
+            docker login --username tjburn70 --password $DOCKERHUB_PASSWORD
+            docker push tjburn70/footwedge:web-client-latest
+
 workflows:
   main:
     jobs:
