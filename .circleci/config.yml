@@ -100,8 +100,19 @@ jobs:
           environment:
             FOOTWEDGE_API_URL: http://localhost:8000/api
 
-      - setup_remote_docker
+  deploy-handicap-service:
+    docker:
+      - image: cimg/node:13.0
+
+    steps:
+      - checkout
       - run:
+          name: Install Dependencies
+          command:
+            npm install npm@latest -g
+            npm install serverless -g
+            serverless plugin install -n serverless-python-requirements
+      - run
           name: Deploy Lambda
           command: |
             cd ./lambdas/handicap-service && sh ./script/deploy.sh
@@ -140,6 +151,9 @@ workflows:
       - build-handicap-service:
           context:
             - footwedge
+      - deploy-handicap-service:
+          requires:
+            - build-handicap-service
       - build-static:
           context:
             - footwedge
