@@ -110,6 +110,8 @@ jobs:
           name: Install Dependencies
           command: |
             sudo npm install serverless -g
+            cd ./lambdas/handicap-service
+            serverless plugin install -n serverless-python-requirements
       - run:
           name: Deploy Lambda
           command: |
