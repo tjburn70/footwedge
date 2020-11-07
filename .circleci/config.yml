@@ -108,11 +108,11 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command:
+          command: |
             npm install npm@latest -g
             npm install serverless -g
             serverless plugin install -n serverless-python-requirements
-      - run
+      - run:
           name: Deploy Lambda
           command: |
             cd ./lambdas/handicap-service && sh ./script/deploy.sh
