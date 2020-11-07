@@ -113,7 +113,8 @@ jobs:
       - run:
           name: Deploy Lambda
           command: |
-            cd ./lambdas/handicap-service && sh ./script/deploy.sh
+            cd ./lambdas/handicap-service
+            sh ./script/deploy.sh dev us-east-2
 
   build-static:
     docker:
