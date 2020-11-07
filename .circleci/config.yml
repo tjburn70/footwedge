@@ -102,16 +102,14 @@ jobs:
 
   deploy-handicap-service:
     docker:
-      - image: cimg/node:13.0
+      - image: cimg/node:14.15
 
     steps:
       - checkout
       - run:
           name: Install Dependencies
           command: |
-            npm install npm@latest -g
             npm install serverless -g
-            serverless plugin install -n serverless-python-requirements
       - run:
           name: Deploy Lambda
           command: |
@@ -119,7 +117,7 @@ jobs:
 
   build-static:
     docker:
-      - image: cimg/node:13.0
+      - image: cimg/node:14.15
 
     steps:
       - checkout
@@ -127,13 +125,6 @@ jobs:
           name: build
           command: |
             cd ./static && npm run build
-      - run:
-          name: Run api unit tests
-          command: |
-            sh ./lambdas/handicap-service/script/run_tests.sh
-          environment:
-            FOOTWEDGE_API_URL: http://localhost:8000/api
-
       - setup_remote_docker
       - run:
           name: Build and push Docker image
