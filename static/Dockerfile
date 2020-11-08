@@ -1,8 +1,8 @@
-FROM node:13
+FROM node:14.15.0-alpine3.10
 WORKDIR /app
 EXPOSE 3000
 
-RUN apt-get update
+COPY package*.json ./
 RUN npm install
 
 COPY . ./

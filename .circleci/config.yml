@@ -1,0 +1,211 @@
+version: 2.1
+
+jobs:
+  build-api:
+    docker:
+      - image: cimg/python:3.7
+      - image: postgres:11.7
+        name: footwedge-db-pg
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: footwedge
+      - image: redis:5.0.9
+        name: footwedge-redis
+      - image: elasticsearch:7.5.2
+        name: footwedge-search
+        environment:
+          ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+          discovery.type: single-node
+      - image: tjburn70/footwedge:search-service-api-latest
+        name: footwedge-search-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          SEARCH_ENGINE_URI: http://footwedge-search
+      - image: tjburn70/footwedge:api-latest
+        name: footwedge-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+          REDIS_URI: redis://footwedge-redis/0
+          AWS_DEFAULT_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./api/requirements.txt
+      - run:
+          name: Run api unit tests
+          command: |
+            sh ./api/script/run_unit_tests.sh
+          environment:
+            FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+            SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+            HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+            REDIS_URI: redis://footwedge-redis/0
+      - setup_remote_docker
+      - run:
+          name: Build and push Docker image
+          command: |
+            cd ./api && sh ./script/build_image.sh
+            docker login --username tjburn70 --password $DOCKERHUB_PASSWORD
+            docker push tjburn70/footwedge:api-latest
+
+  build-handicap-service:
+    docker:
+      - image: cimg/python:3.7
+      - image: postgres:11.7
+        name: footwedge-db-pg
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: footwedge
+      - image: tjburn70/footwedge:api-latest
+        name: footwedge-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+          REDIS_URI: redis://footwedge-redis/0
+          AWS_DEFAULT_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/handicap-service/requirements.txt
+            pip install -r ./lambdas/handicap-service/requirements-dev.txt
+      - run:
+          name: Run api unit tests
+          command: |
+            sh ./lambdas/handicap-service/script/run_tests.sh
+          environment:
+            FOOTWEDGE_API_URL: http://localhost:8000/api
+
+  deploy-handicap-service:
+    docker:
+      - image: cimg/python:3.7-node
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo npm install serverless -g
+            cd ./lambdas/handicap-service
+            serverless plugin install -n serverless-python-requirements
+      - run:
+          name: Deploy Lambda
+          command: |
+            cd ./lambdas/handicap-service
+            sh ./script/deploy.sh dev us-east-2
+
+  build-search-service:
+    docker:
+      - image: cimg/python:3.7
+      - image: elasticsearch:7.5.2
+        name: footwedge-search
+        environment:
+          ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+          discovery.type: single-node
+      - image: tjburn70/footwedge:search-service-api-latest
+        name: footwedge-search-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          SEARCH_ENGINE_URI: http://footwedge-search
+
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/search-service/requirements.txt
+#      - run:
+#          name: Run api unit tests
+#          command: |
+#            sh ./lambdas/search-service/script/run_tests.sh
+
+  deploy-search-service:
+    docker:
+      - image: cimg/python:3.7-node
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo npm install serverless -g
+            cd ./lambdas/search-service
+            serverless plugin install -n serverless-python-requirements
+      - run:
+          name: Deploy Lambda
+          command: |
+            cd ./lambdas/search-service
+            sh ./script/deploy.sh dev us-east-2
+
+  build-static:
+    docker:
+      - image: cimg/node:14.15
+
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: |
+            cd ./static
+            npm install && npm run build
+      - setup_remote_docker
+      - run:
+          name: Build and push Docker image
+          command: |
+            cd ./static && sh ./script/build_image.sh
+            docker login --username tjburn70 --password $DOCKERHUB_PASSWORD
+            docker push tjburn70/footwedge:web-client-latest
+
+workflows:
+  main:
+    jobs:
+      - build-api:
+          context:
+            - footwedge
+      - build-handicap-service:
+          context:
+            - footwedge
+      - deploy-handicap-service:
+          context:
+            - footwedge
+          requires:
+            - build-handicap-service
+      - build-search-service:
+          context:
+            - footwedge
+      - deploy-search-service:
+          context:
+            - footwedge
+          requires:
+            - build-search-service
+      - build-static:
+          context:
+            - footwedge
+
