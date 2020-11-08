@@ -147,6 +147,8 @@ workflows:
           context:
             - footwedge
       - deploy-handicap-service:
+          context:
+            - footwedge
           requires:
             - build-handicap-service
       - build-static:
