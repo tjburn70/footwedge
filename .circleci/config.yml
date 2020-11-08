@@ -102,15 +102,13 @@ jobs:
 
   deploy-handicap-service:
     docker:
-      - image: cimg/node:14.15
+      - image: cimg/python:3.7-node
 
     steps:
       - checkout
       - run:
           name: Install Dependencies
           command: |
-            apt-get update && apt-get install -y python3.7
-            python --version
             sudo npm install serverless -g
             cd ./lambdas/handicap-service
             serverless plugin install -n serverless-python-requirements
