@@ -109,8 +109,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
+            apt-get update && apt-get install -y python3.7
+            python --version
             sudo npm install serverless -g
-            apt-get update && apt-get install python3.7
             cd ./lambdas/handicap-service
             serverless plugin install -n serverless-python-requirements
       - run:
