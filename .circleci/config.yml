@@ -122,10 +122,10 @@ jobs:
     docker:
       - image: cimg/python:3.7
       - image: elasticsearch:7.5.2
-          name: footwedge-search
-          environment:
-            ES_JAVA_OPTS: "-Xmx512m -Xms512m"
-            discovery.type: single-node
+        name: footwedge-search
+        environment:
+          ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+          discovery.type: single-node
       - image: tjburn70/footwedge:search-service-api-latest
         name: footwedge-search-api
         auth:
