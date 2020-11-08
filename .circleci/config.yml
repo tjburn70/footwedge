@@ -118,6 +118,52 @@ jobs:
             cd ./lambdas/handicap-service
             sh ./script/deploy.sh dev us-east-2
 
+  build-search-service:
+    docker:
+      - image: cimg/python:3.7
+      - image: elasticsearch:7.5.2
+          name: footwedge-search
+          environment:
+            ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+            discovery.type: single-node
+      - image: tjburn70/footwedge:search-service-api-latest
+        name: footwedge-search-api
+        auth:
+          username: tjburn70
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          SEARCH_ENGINE_URI: http://footwedge-search
+
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/search-service/requirements.txt
+#      - run:
+#          name: Run api unit tests
+#          command: |
+#            sh ./lambdas/search-service/script/run_tests.sh
+
+  deploy-search-service:
+    docker:
+      - image: cimg/python:3.7-node
+
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo npm install serverless -g
+            cd ./lambdas/search-service
+            serverless plugin install -n serverless-python-requirements
+      - run:
+          name: Deploy Lambda
+          command: |
+            cd ./lambdas/search-service
+            sh ./script/deploy.sh dev us-east-2
+
   build-static:
     docker:
       - image: cimg/node:14.15
@@ -151,6 +197,14 @@ workflows:
             - footwedge
           requires:
             - build-handicap-service
+      - build-search-service:
+          context:
+            - footwedge
+      - deploy-search-service:
+          context:
+            - footwedge
+          requires:
+            - build-search-service
       - build-static:
           context:
             - footwedge
