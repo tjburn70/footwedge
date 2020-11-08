@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-api:
     docker:
-      - image: circleci/python:3.7.6-buster
+      - image: cimg/python:3.7
       - image: postgres:11.7
         name: footwedge-db-pg
         environment:
@@ -64,7 +64,7 @@ jobs:
 
   build-handicap-service:
     docker:
-      - image: circleci/python:3.7.6-buster
+      - image: cimg/python:3.7
       - image: postgres:11.7
         name: footwedge-db-pg
         environment:
