@@ -58,7 +58,7 @@ def golf_club(footwedge_api_client: FootwedgeApi):
 
 @pytest.fixture(scope="class")
 def golf_course_factory(footwedge_api_client: FootwedgeApi):
-    golf_club_id_to_golf_course_id = {}
+    golf_course_ids = []
 
     def _golf_course_factory(golf_club_id: int):
         request_body = {
@@ -76,19 +76,22 @@ def golf_course_factory(footwedge_api_client: FootwedgeApi):
         )
         resp.raise_for_status()
         result = resp.json()['result']
-        golf_course_id = result.get('id')
-        golf_club_id_to_golf_course_id[golf_course_id] = golf_club_id
+        golf_course_ids.append(result.get('id'))
         return result
 
     yield _golf_course_factory
 
     print("Cleaning up golf_course_factory...")
-    # for club_id, course_id in golf_club_id_to_golf_course_id.items():
-    #     delete_path = f"api/golf-clubs/{club_id}/golf-courses/{course_id}"
-    #     footwedge_api_client.call(
-    #         method="delete",
-    #         path=delete_path,
-    #     )
+    for golf_course_id in golf_course_ids:
+        delete_path = f"/golf-courses/{golf_course_id}"
+        del_resp = footwedge_api_client.call(
+            method="delete",
+            path=delete_path,
+        )
+        if del_resp.status_code == 204:
+            print(f"Successfully deleted golf_course with id: {golf_course_id}")
+        else:
+            print(f"Unable to delete golf_course with id: {golf_course_id}")
 
 
 @pytest.fixture(scope="class")
@@ -123,11 +126,11 @@ def tee_box_factory(footwedge_api_client: FootwedgeApi):
     print("Cleaning up tee_box_factory...")
     for tee_box_id in tee_box_ids:
         delete_path = f"/golf-courses/tee-boxes/{tee_box_id}"
-        resp = footwedge_api_client.call(
+        del_resp = footwedge_api_client.call(
             method="delete",
             path=delete_path,
         )
-        if resp.status_code == 204:
+        if del_resp.status_code == 204:
             print(f"Successfully deleted tee_box with id: {tee_box_id}")
         else:
             print(f"Unable to delete tee_box with id: {tee_box_id}")
