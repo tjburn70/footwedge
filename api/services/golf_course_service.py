@@ -80,3 +80,14 @@ class GolfCourseService:
             'uri': f'api/golf-courses/{golf_course_model.id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    def delete(self, _id: int):
+        is_deleted = self._golf_course_repo.delete(model_id=_id)
+        if not is_deleted:
+            response_body = {
+                'status': 'fail',
+                'message': f'No Golf Course with id: {_id}',
+            }
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+        return make_response("", HTTPStatus.NO_CONTENT.value)
