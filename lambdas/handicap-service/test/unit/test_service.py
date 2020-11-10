@@ -153,6 +153,23 @@ class TestHandicapService:
         with pytest.raises(HandicapServiceFailure):
             handicap_service._get_tee_box(tee_box_id=1)
 
+    def test_get_tee_box_none_found(self):
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = True
+        response_body = {
+            "result": {},
+        }
+        mock_response.json.return_value = response_body
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        with pytest.raises(HandicapServiceFailure):
+            handicap_service._get_tee_box(tee_box_id=-1)
+
     def test_get_tee_box(self):
         mock_footwedge_api_client = MagicMock()
         mock_response = MagicMock()
