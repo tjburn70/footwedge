@@ -98,7 +98,7 @@ jobs:
           command: |
             sh ./lambdas/handicap-service/script/run_unit_tests.sh
           environment:
-            FOOTWEDGE_API_URL: http://localhost:8000/api
+            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
 
   deploy-handicap-service:
     docker:
