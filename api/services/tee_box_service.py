@@ -61,7 +61,7 @@ class TeeBoxService:
         response_body = {
             'status': 'success',
             'message': f"Tee Box: '{tee_box_model.tee_color}' was successfully added",
-            'd': tee_box,
+            'result': tee_box,
             'uri': f'/api/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)

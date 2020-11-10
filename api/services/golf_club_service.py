@@ -56,7 +56,7 @@ class GolfClubService:
         response_body = {
             'status': 'success',
             'message': f"Golf Club: '{golf_club_model.name}' was successfully added",
-            'd': golf_club,
+            'result': golf_club,
             'uri': f'api/golf-clubs/{golf_club_model.id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
