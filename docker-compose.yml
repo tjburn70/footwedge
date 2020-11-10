@@ -31,7 +31,7 @@ services:
       discovery.type: single-node
   search-service-api:
     container_name: search-service-api
-    image: footwedge:search-service-api-latest
+    image: tjburn70/footwedge:search-service-api-latest
     build:
       context: ./lambdas/search-service
       dockerfile: Dockerfile
@@ -45,7 +45,7 @@ services:
       - elasticsearch
   footwedge-api:
     container_name: footwedge-api
-    image: footwedge:api-latest
+    image: tjburn70/footwedge:api-latest
     build:
       context: ./api
       dockerfile: Dockerfile
@@ -64,7 +64,7 @@ services:
       - elasticsearch
   footwedge-web-client:
     container_name: footwedge-web-client
-    image: footwedge:web-client-latest
+    image: tjburn70/footwedge:web-client-latest
     build:
       context: ./static
       dockerfile: Dockerfile
