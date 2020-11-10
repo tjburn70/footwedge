@@ -12,6 +12,7 @@ from lib.service import HandicapService
 IMPOSSIBLY_LARGE_INT = 10000000000000000000
 
 
+@pytest.mark.integration
 class TestHandicapService:
 
     @classmethod
