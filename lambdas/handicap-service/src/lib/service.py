@@ -28,6 +28,10 @@ class HandicapService:
             raise HandicapServiceFailure(error_message)
 
         results = resp.json().get('result')
+        if not results:
+            error_message = f"The user_id: {self.user_id} does not have any golf_round records"
+            print(error_message)
+            raise HandicapServiceFailure(error_message)
         golf_rounds = [GolfRound(**result) for result in results]
         return golf_rounds
 
@@ -40,6 +44,9 @@ class HandicapService:
             raise HandicapServiceFailure(error_message)
 
         result = resp.json().get('result')
+        if not result:
+            error_message = f"No tee-box with id: {tee_box_id}"
+            raise HandicapServiceFailure(error_message)
         return TeeBox(**result)
 
     @staticmethod
@@ -80,8 +87,6 @@ class HandicapService:
             differentials=differentials,
         )
         handicap_index = (sum(lowest_differentials) / len(lowest_differentials)) * Decimal('0.96')
-        print(handicap_index)
-        print(type(handicap_index))
         return round(handicap_index, 1)
 
     def post_handicap(self):
