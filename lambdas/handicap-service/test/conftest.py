@@ -57,12 +57,16 @@ def golf_club(footwedge_api_client: FootwedgeApi):
     yield result
 
     print("Cleaning up golf_club_factory...")
-    # golf_club_id = result.get('id')
-    # delete_path = f"{path}/{golf_club_id}"
-    # footwedge_api_client.call(
-    #     method="delete",
-    #     path=delete_path,
-    # )
+    golf_club_id = result.get('id')
+    delete_path = f"{path}/{golf_club_id}"
+    del_resp = footwedge_api_client.call(
+        method="delete",
+        path=delete_path,
+    )
+    if del_resp.status_code == 204:
+        print(f"Successfully deleted golf_club with id: {golf_club_id}")
+    else:
+        print(f"Unable to delete golf_club with id: {golf_club_id}")
 
 
 @pytest.fixture(scope="class")
@@ -216,6 +220,3 @@ def golf_round_model_factory():
             played_on=played_on,
         )
     return _golf_round_model_factory
-
-
-
