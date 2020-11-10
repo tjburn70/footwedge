@@ -93,7 +93,7 @@ def golf_course_factory(footwedge_api_client: FootwedgeApi):
 
 @pytest.fixture(scope="class")
 def tee_box_factory(footwedge_api_client: FootwedgeApi):
-    golf_course_id_to_tee_box_id = {}
+    tee_box_ids = []
 
     def _tee_box_factory(golf_course_id: int, par: int, course_rating: Decimal, slope: Decimal):
         request_body = {
@@ -115,19 +115,22 @@ def tee_box_factory(footwedge_api_client: FootwedgeApi):
         )
         resp.raise_for_status()
         result = resp.json()['result']
-        tee_box_id = result.get('id')
-        golf_course_id_to_tee_box_id[golf_course_id] = tee_box_id
+        tee_box_ids.append(result.get('id'))
         return result
 
     yield _tee_box_factory
 
     print("Cleaning up tee_box_factory...")
-    # for club_id, course_id in golf_course_id_to_tee_box_id.items():
-    #     delete_path = f"api/golf-clubs/{club_id}/golf-courses/{course_id}"
-    #     footwedge_api_client.call(
-    #         method="delete",
-    #         path=delete_path,
-    #     )
+    for tee_box_id in tee_box_ids:
+        delete_path = f"/golf-courses/tee-boxes/{tee_box_id}"
+        resp = footwedge_api_client.call(
+            method="delete",
+            path=delete_path,
+        )
+        if resp.status_code == 204:
+            print(f"Successfully deleted tee_box with id: {tee_box_id}")
+        else:
+            print(f"Unable to delete tee_box with id: {tee_box_id}")
 
 
 @pytest.fixture(scope="class")
