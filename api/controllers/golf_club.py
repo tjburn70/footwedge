@@ -38,14 +38,17 @@ def golf_clubs():
     return service.add(payload=request.get_json())
 
 
-@blueprint.route('/<int:golf_club_id>', methods=['GET'])
+@blueprint.route('/<int:golf_club_id>', methods=['GET', 'DELETE'])
 @throws_500_on_exception
 def golf_clubs_by_id(golf_club_id):
     service = golf_club_service.GolfClubService(
         repo=golf_club_repo,
         schema=golf_club_schema,
     )
-    return service.get(_id=golf_club_id)
+    if request.method == 'GET':
+        return service.get(_id=golf_club_id)
+    if request.method == 'DELETE':
+        return service.delete(_id=golf_club_id)
 
 
 @blueprint.route('/<int:golf_club_id>/golf-courses', methods=['GET', 'POST'])
