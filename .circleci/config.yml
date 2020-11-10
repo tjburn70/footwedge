@@ -94,9 +94,9 @@ jobs:
             pip install -r ./lambdas/handicap-service/requirements.txt
             pip install -r ./lambdas/handicap-service/requirements-dev.txt
       - run:
-          name: Run api unit tests
+          name: Run handicap-service unit tests
           command: |
-            sh ./lambdas/handicap-service/script/run_tests.sh
+            sh ./lambdas/handicap-service/script/run_unit_tests.sh
           environment:
             FOOTWEDGE_API_URL: http://localhost:8000/api
 
@@ -144,7 +144,7 @@ jobs:
 #      - run:
 #          name: Run api unit tests
 #          command: |
-#            sh ./lambdas/search-service/script/run_tests.sh
+#            sh ./lambdas/search-service/script/run_unit_tests.sh
 
   deploy-search-service:
     docker:
