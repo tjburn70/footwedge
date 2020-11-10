@@ -39,3 +39,8 @@ class BaseRepository:
         self.db_session.commit()
         self.db_session.refresh(model_obj)
         return model_obj
+
+    def delete(self, model_id) -> bool:
+        is_deleted = self.db_session.query(self.model).filter(self.model.id == model_id).delete()
+        self.db_session.commit()
+        return is_deleted
