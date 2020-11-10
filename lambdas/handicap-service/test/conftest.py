@@ -10,6 +10,12 @@ from lib.models import GolfRound, TeeBox
 from lib.footwedge_api import FootwedgeApi
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "integration"
+    )
+
+
 @pytest.fixture(scope="class")
 def footwedge_api_client():
     return FootwedgeApi()
