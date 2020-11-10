@@ -50,7 +50,7 @@ class GolfClubService:
         golf_club = self._golf_club_schema.dump(golf_club_model).data
         # TODO: Is this the best way, maybe make an async future
         SearchService.add_golf_club(
-            golf_club_id=golf_club.id,
+            golf_club_id=golf_club_model.id,
             payload=golf_club,
         )
         response_body = {
