@@ -68,14 +68,17 @@ def tee_boxes(golf_course_id):
 
 
 # TODO: Consider diff controller?
-@blueprint.route('/tee-boxes/<int:tee_box_id>', methods=['GET'])
+@blueprint.route('/tee-boxes/<int:tee_box_id>', methods=['GET', 'DELETE'])
 @throws_500_on_exception
 def tee_box_by_id(tee_box_id):
     service = tee_box_service.TeeBoxService(
         repo=tee_box_repo,
         schema=tee_box_schema,
     )
-    return service.get(_id=tee_box_id)
+    if request.method == 'GET':
+        return service.get(_id=tee_box_id)
+    if request.method == 'DELETE':
+        return service.delete(_id=tee_box_id)
 
 
 @blueprint.route('/<int:golf_course_id>/tee-boxes/<int:tee_box_id>/holes', methods=['GET', 'POST'])
