@@ -55,11 +55,13 @@ class TeeBoxService:
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        tee_box = self._tee_box_repo.create(data=tee_box_data)
-        tee_box_id = tee_box.id
+        tee_box_model = self._tee_box_repo.create(data=tee_box_data)
+        tee_box = self._tee_box_schema.dump(tee_box_model).data
+        tee_box_id = tee_box_model.id
         response_body = {
             'status': 'success',
-            'message': f"Tee Box: '{tee_box.tee_color}' was successfully added",
+            'message': f"Tee Box: '{tee_box_model.tee_color}' was successfully added",
+            'd': tee_box,
             'uri': f'/api/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
