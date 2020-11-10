@@ -1,3 +1,12 @@
+"""
+Order of fixtures matters for cleanup purposes
+
+Current teardown order of operations:
+1) user
+2) tee_box_factory
+3) golf_course_factory
+4) golf_club_factory
+"""
 import random
 import json
 import uuid
