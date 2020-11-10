@@ -65,16 +65,18 @@ class GolfCourseService:
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        golf_course = self._golf_course_repo.create(data=golf_course_data)
-        golf_club_id = golf_course.golf_club_id
+        golf_course_model = self._golf_course_repo.create(data=golf_course_data)
+        golf_course = self._golf_course_schema.dump(golf_course_model).data
+        golf_club_id = golf_course_model.golf_club_id
         # TODO: Is this the best way, maybe make an async future
         SearchService.add_golf_course(
             golf_club_id=golf_club_id,
-            payload=self._golf_course_schema.dump(golf_course).data
+            payload=golf_course
         )
         response_body = {
             'status': 'success',
             'message': f"Golf Course: '{golf_course.name}' was successfully added",
+            'd': golf_course,
             'uri': f'api/golf-courses/{golf_course.id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
