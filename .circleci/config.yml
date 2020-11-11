@@ -118,13 +118,15 @@ jobs:
             pip install -r ./lambdas/handicap-service/requirements-dev.txt
       - run:
           name: "Docker Compose"
-          command: docker-compose up -d
+          command: |
+            docker-compose up -d
+            docker ps
       - run:
           name: "Run handicap-service integration tests"
           command: |
             sh ./lambdas/handicap-service/script/run_integration_tests.sh
           environment:
-            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
+            FOOTWEDGE_API_URL: http://localhost:8000/api
             AWS_DEFAULT_REGION: us-east-2
             AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
