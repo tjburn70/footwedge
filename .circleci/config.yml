@@ -107,7 +107,9 @@ jobs:
       - checkout
       - run:
           name: "Set Python Version"
-          command: pyenv global 3.7.6
+          command: |
+            pyenv install -v 3.7.6
+            pyenv global 3.7.6
       - run:
           name: Bootstrap virtual environment
           command: |
