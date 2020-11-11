@@ -116,7 +116,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Docker Compose
-          command: docker-compose up -d --project-name footwedge
+          command: docker-compose up -d
       - run:
           name: Run handicap-service integration tests
           command: |
