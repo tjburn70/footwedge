@@ -113,6 +113,8 @@ jobs:
       - run:
           name: "Set Python Version"
           command: |
+            pyenv install --list
+            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             pyenv install -v 3.7.6
             pyenv versions
             pyenv global 3.7.6
