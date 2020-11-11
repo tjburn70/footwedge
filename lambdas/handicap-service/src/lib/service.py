@@ -89,7 +89,17 @@ class HandicapService:
         handicap_index = (sum(lowest_differentials) / len(lowest_differentials)) * Decimal('0.96')
         return round(handicap_index, 1)
 
-    def post_handicap(self):
+    def post_handicap(self, handicap_index: Decimal):
+        data = {"index": handicap_index, "authorized_association": "USGA"}
+        handicap_path = f"/handicaps/{self.user_id}"
+        return self.footwedge_api_client.call(
+            method="post",
+            path=handicap_path,
+            json=json.loads(json.dumps(data, default=str)),
+            headers={"Content-Type": "application/json"},
+        )
+
+    def add_handicap(self):
         ordered_golf_rounds = self._get_golf_rounds()
         if len(ordered_golf_rounds) > 20:
             golf_rounds = ordered_golf_rounds[:20]
@@ -112,11 +122,12 @@ class HandicapService:
             print(exc)
             return
 
-        data = {"index": handicap_index, "authorized_association": "USGA"}
-        handicap_path = f"/handicaps/{self.user_id}"
-        self.footwedge_api_client.call(
-            method="post",
-            path=handicap_path,
-            json=json.loads(json.dumps(data, default=str)),
-            headers={"Content-Type": "application/json"},
-        )
+        resp = self.post_handicap(handicap_index=handicap_index)
+        if resp.ok:
+            success_message = f"Successfully calculated and added a new handicap: {handicap_index} " \
+                              f"for user: {self.user_id}"
+            print(success_message)
+        else:
+            failure_message = f"Unable to post handicap for user: {self.user_id} \n" \
+                              f"Reason: {resp.text}"
+            print(failure_message)
