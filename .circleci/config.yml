@@ -107,12 +107,13 @@ jobs:
       - checkout
       - run:
           name: "Set Python Version"
+          command: pyenv global 3.7.6
+      - run:
+          name: Bootstrap virtual environment
           command: |
-            pyenv versions
-            pyenv install --list
-            pyenv install -v 3.7.6
-            pyenv versions
-            pyenv global 3.7.6
+            python -m venv .venv
+            pip install -r ./lambdas/handicap-service/requirements.txt
+            pip install -r ./lambdas/handicap-service/requirements-dev.txt
       - run:
           name: "Docker Compose"
           command: docker-compose up -d
