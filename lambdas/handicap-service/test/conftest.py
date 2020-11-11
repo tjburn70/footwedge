@@ -220,3 +220,52 @@ def golf_round_model_factory():
             played_on=played_on,
         )
     return _golf_round_model_factory
+
+
+@pytest.fixture(scope="class")
+def golf_round_factory(footwedge_api_client: FootwedgeApi):
+    golf_round_ids = []
+    auth_headers = {}
+
+    def _golf_round_factory(access_token: str, golf_course_id: int, tee_box_id: int, gross_score: int):
+        played_on = datetime.now().strftime('%Y-%m-%d')
+        request_body = {
+            "golf_course_id": golf_course_id,
+            "tee_box_id": tee_box_id,
+            "gross_score": gross_score,
+            "towards_handicap": True,
+            "played_on": played_on,
+        }
+
+        method = "post"
+        path = f"/golf-rounds"
+        auth_headers["Authorization"] = f"Bearer {access_token}"
+        headers = {
+            "Content-Type": "application/json",
+            **auth_headers
+        }
+        resp = footwedge_api_client.call(
+            method=method,
+            path=path,
+            headers=headers,
+            data=json.dumps(request_body, default=str)
+        )
+        resp.raise_for_status()
+        result = resp.json()['result']
+        golf_round_ids.append(result.get('id'))
+        return result
+
+    yield _golf_round_factory
+
+    print("Cleaning up golf_round_factory...")
+    for golf_round_id in golf_round_ids:
+        delete_path = f"/golf-rounds/{golf_round_id}"
+        del_resp = footwedge_api_client.call(
+            method="delete",
+            path=delete_path,
+            headers=auth_headers
+        )
+        if del_resp.status_code == 204:
+            print(f"Successfully deleted golf_round with id: {golf_round_id}")
+        else:
+            print(f"Unable to delete golf_round with id: {golf_round_id}")
