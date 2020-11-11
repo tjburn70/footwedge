@@ -1,4 +1,5 @@
 import json
+import logging
 from decimal import Decimal
 from typing import List
 
@@ -12,6 +13,9 @@ from lib.exceptions import (
     HandicapServiceFailure,
 )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+
 
 class HandicapService:
 
@@ -24,13 +28,13 @@ class HandicapService:
         resp = self.footwedge_api_client.call(method="get", path=path)
         if not resp.ok:
             error_message = f"status_code: '{resp.status_code}' reason: '{resp.text}'"
-            print(error_message)
+            logger.error(error_message)
             raise HandicapServiceFailure(error_message)
 
         results = resp.json().get('result')
         if not results:
             error_message = f"The user_id: {self.user_id} does not have any golf_round records"
-            print(error_message)
+            logger.error(error_message)
             raise HandicapServiceFailure(error_message)
         golf_rounds = [GolfRound(**result) for result in results]
         return golf_rounds
@@ -40,7 +44,7 @@ class HandicapService:
         resp = self.footwedge_api_client.call(method="get", path=path)
         if not resp.ok:
             error_message = f"status_code: '{resp.status_code}' reason: '{resp.text}'"
-            print(error_message)
+            logger.error(error_message)
             raise HandicapServiceFailure(error_message)
 
         result = resp.json().get('result')
@@ -119,15 +123,15 @@ class HandicapService:
         try:
             handicap_index = self.calculate_handicap_index(differentials=differentials)
         except (SampleSizeTooSmall, HandicapServiceFailure) as exc:
-            print(exc)
+            logger.exception(exc)
             return
 
         resp = self.post_handicap(handicap_index=handicap_index)
         if resp.ok:
             success_message = f"Successfully calculated and added a new handicap: {handicap_index} " \
                               f"for user: {self.user_id}"
-            print(success_message)
+            logger.info(success_message)
         else:
             failure_message = f"Unable to post handicap for user: {self.user_id} \n" \
                               f"Reason: {resp.text}"
-            print(failure_message)
+            logger.info(failure_message)
