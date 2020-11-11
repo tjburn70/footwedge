@@ -72,3 +72,14 @@ class GolfRoundService:
             QueueUrl=settings.HANDICAP_QUEUE_URL,
             MessageBody=payload,
         )
+
+    def delete(self, _id: int):
+        is_deleted = self._golf_round_repo.delete(model_id=_id)
+        if not is_deleted:
+            response_body = {
+                'status': 'fail',
+                'message': f'No Golf Round with id: {_id}',
+            }
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+        return make_response("", HTTPStatus.NO_CONTENT.value)
