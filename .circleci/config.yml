@@ -124,10 +124,11 @@ jobs:
       - run:
           name: "Run handicap-service integration tests"
           command: |
-            curl http://0.0.0.0:8000/api/health
+            sleep 5
+            curl http://footwedge-api:8000/api/health
             sh ./lambdas/handicap-service/script/run_integration_tests.sh
           environment:
-            FOOTWEDGE_API_URL: http://0.0.0.0:8000/api
+            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
             AWS_DEFAULT_REGION: us-east-2
             AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
