@@ -108,13 +108,15 @@ jobs:
 
   run-integration-handicap-service:
     machine: true
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
           name: "Set Python Version"
           command: |
+            pyenv versions
             pyenv install --list
-            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+#            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
             pyenv install -v 3.7.6
             pyenv versions
             pyenv global 3.7.6
