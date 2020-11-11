@@ -99,9 +99,24 @@ jobs:
             sh ./lambdas/handicap-service/script/run_unit_tests.sh
           environment:
             FOOTWEDGE_API_URL: http://footwedge-api:8000/api
+
+
+  run-integration-handicap-service:
+    docker:
+      - image: cimg/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/handicap-service/requirements.txt
+            pip install -r ./lambdas/handicap-service/requirements-dev.txt
+
+      - setup_remote_docker
       - run:
           name: Docker Compose
-          command: docker-compose up --project-name footwedge
+          command: docker-compose up -d --project-name footwedge
       - run:
           name: Run handicap-service integration tests
           command: |
@@ -224,16 +239,16 @@ workflows:
       - build-handicap-service:
           context:
             - footwedge
-#      - run-integration-handicap-service:
-#          context:
-#            - footwedge
+      - run-integration-handicap-service:
+          context:
+            - footwedge
       - deploy-handicap-service:
           context:
             - footwedge
           requires:
             - build-handicap-service
             - build-api
-#            - run-integration-handicap-service
+            - run-integration-handicap-service
       - build-search-service:
           context:
             - footwedge
