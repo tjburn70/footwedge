@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 
@@ -9,6 +10,7 @@ from lib.exceptions import (
 )
 from lib.service import HandicapService
 
+HANDICAP_SERVICE_IMPORT_PATH = 'lib.service.HandicapService'
 IMPOSSIBLY_LARGE_INT = 10000000000000000000
 
 
@@ -69,11 +71,23 @@ class TestHandicapService:
         expected_tee_box = TeeBox(**self.tee_box_data)
         assert actual_tee_box == expected_tee_box, f"Expected a result = {expected_tee_box.json()}"
 
-    def test_post_handicap_not_enough_golf_rounds(self):
-        invalid_user_id = IMPOSSIBLY_LARGE_INT
+    @patch(f'{HANDICAP_SERVICE_IMPORT_PATH}.post_handicap')
+    @patch(f'{HANDICAP_SERVICE_IMPORT_PATH}._get_golf_rounds')
+    def test_post_handicap_not_enough_golf_rounds(self,
+                                                  mock_get_golf_rounds,
+                                                  mock_post_handicap,
+                                                  golf_round_model_factory):
+        user_id_not_enough_rounds = -1
+        golf_round = golf_round_model_factory(
+            user_id=user_id_not_enough_rounds,
+            tee_box_id=self.tee_box_id,
+        )
+        mock_get_golf_rounds.return_value = [golf_round]
         handicap_svc = HandicapService(
             footwedge_api_client=self.footwedge_api_client,
-            user_id=invalid_user_id
+            user_id=user_id_not_enough_rounds
         )
-        with pytest.raises(SampleSizeTooSmall):
-            handicap_svc.post_handicap()
+
+        handicap_svc.add_handicap()
+
+        assert not mock_post_handicap.called
