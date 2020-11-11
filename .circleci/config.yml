@@ -100,52 +100,31 @@ jobs:
           environment:
             FOOTWEDGE_API_URL: http://footwedge-api:8000/api
 
-
   run-integration-handicap-service:
-    docker:
-      - image: cimg/python:3.7
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
-          name: Bootstrap virtual environment
+          name: "Set Python Version"
           command: |
-            python -m venv .venv
-            pip install -r ./lambdas/handicap-service/requirements.txt
-            pip install -r ./lambdas/handicap-service/requirements-dev.txt
-
-      - setup_remote_docker
+            pyenv versions
+            pyenv install --list
+            pyenv install -v 3.7.6
+            pyenv versions
+            pyenv global 3.7.6
       - run:
-          name: Docker Compose
+          name: "Docker Compose"
           command: docker-compose up -d
       - run:
-          name: Run handicap-service integration tests
+          name: "Run handicap-service integration tests"
           command: |
             sh ./lambdas/handicap-service/script/run_integration_tests.sh
           environment:
             FOOTWEDGE_API_URL: http://footwedge-api:8000/api
-
-#  run-integration-handicap-service:
-#    machine:
-#      image: ubuntu-2004:202010-01
-#    steps:
-#      - checkout
-#      - run:
-#          name: "Set Python Version"
-#          command: |
-#            pyenv versions
-#            pyenv install --list
-#            pyenv install -v 3.7.6
-#            pyenv versions
-#            pyenv global 3.7.6
-#      - run:
-#          name: "Docker Compose"
-#          command: docker-compose up
-#      - run:
-#          name: "Run handicap-service integration tests"
-#          command: |
-#            sh ./lambdas/handicap-service/script/run_integration_tests.sh
-#          environment:
-#            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
+            AWS_DEFAULT_REGION: us-east-2
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
   deploy-handicap-service:
     docker:
