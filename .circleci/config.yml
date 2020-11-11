@@ -233,7 +233,7 @@ workflows:
           requires:
             - build-handicap-service
             - build-api
-            - run-integration-handicap-service
+#            - run-integration-handicap-service
       - build-search-service:
           context:
             - footwedge
