@@ -24,8 +24,8 @@ class GolfRoundService:
         self._golf_round_schema = schema
 
     def get(self, _id: int) -> Response:
-        golf_course = self._golf_round_repo.get(_id)
-        result = self._golf_round_schema.dump(golf_course)
+        golf_round = self._golf_round_repo.get(_id)
+        result = self._golf_round_schema.dump(golf_round)
         response_body = {
             'status': 'success',
             'result': result.data
