@@ -203,6 +203,7 @@ workflows:
             - footwedge
           requires:
             - build-handicap-service
+            - build-api
       - build-search-service:
           context:
             - footwedge
