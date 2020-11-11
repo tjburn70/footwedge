@@ -107,28 +107,28 @@ jobs:
 #            FOOTWEDGE_API_URL: http://0.0.0.0:8000/api
 
   run-integration-handicap-service:
-    machine: true
+    machine:
       image: ubuntu-2004:202010-01
-    steps:
-      - checkout
-      - run:
-          name: "Set Python Version"
-          command: |
-            pyenv versions
-            pyenv install --list
-#            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
-            pyenv install -v 3.7.6
-            pyenv versions
-            pyenv global 3.7.6
-      - run:
-          name: "Docker Compose"
-          command: docker-compose up
-      - run:
-          name: "Run handicap-service integration tests"
-          command: |
-            sh ./lambdas/handicap-service/script/run_integration_tests.sh
-          environment:
-            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
+      steps:
+        - checkout
+        - run:
+            name: "Set Python Version"
+            command: |
+              pyenv versions
+              pyenv install --list
+  #            cd /opt/circleci/.pyenv/plugins/python-build/../.. && git pull && cd -
+              pyenv install -v 3.7.6
+              pyenv versions
+              pyenv global 3.7.6
+        - run:
+            name: "Docker Compose"
+            command: docker-compose up
+        - run:
+            name: "Run handicap-service integration tests"
+            command: |
+              sh ./lambdas/handicap-service/script/run_integration_tests.sh
+            environment:
+              FOOTWEDGE_API_URL: http://footwedge-api:8000/api
 
   deploy-handicap-service:
     docker:
