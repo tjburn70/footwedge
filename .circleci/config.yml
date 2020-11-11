@@ -113,8 +113,9 @@ jobs:
       - run:
           name: "Set Python Version"
           command: |
+            pyenv install -v 3.7.6
             pyenv versions
-            pyenv global 3.7.0
+            pyenv global 3.7.6
       - run:
           name: "Docker Compose"
           command: docker-compose up
