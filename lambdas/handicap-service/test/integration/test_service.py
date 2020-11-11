@@ -3,9 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
-from lib.models import TeeBox
+from lib.models import TeeBox, GolfRound
 from lib.exceptions import (
-    SampleSizeTooSmall,
     HandicapServiceFailure,
 )
 from lib.service import HandicapService
@@ -19,7 +18,8 @@ class TestHandicapService:
 
     @classmethod
     @pytest.fixture(autouse=True)
-    def setup_class(cls, golf_club, golf_course_factory, tee_box_factory, user, footwedge_api_client):
+    def setup_class(cls, golf_club, golf_course_factory, tee_box_factory,
+                    user, golf_round_factory, footwedge_api_client):
         cls.golf_club_id = golf_club.get('id')
 
         cls.golf_course_data = golf_course_factory(golf_club_id=cls.golf_club_id)
@@ -37,6 +37,19 @@ class TestHandicapService:
         cls.tee_box_id = cls.tee_box_data.get('id')
 
         cls.user_id = user.get('user_id')
+        cls.access_token = user.get('access_token')
+        cls.refresh_token = user.get('refresh_token')
+
+        cls.scores = [74, 75, 76, 77, 78]
+        cls.golf_rounds = []
+        for score in cls.scores:
+            golf_round_data = golf_round_factory(
+                access_token=cls.access_token,
+                golf_course_id=cls.golf_course_id,
+                tee_box_id=cls.tee_box_id,
+                gross_score=score,
+            )
+            cls.golf_rounds.append(GolfRound(**golf_round_data))
 
         cls.footwedge_api_client = footwedge_api_client
         cls.handicap_service = HandicapService(
@@ -55,7 +68,7 @@ class TestHandicapService:
 
     def test_get_golf_rounds(self):
         results = self.handicap_service._get_golf_rounds()
-        print(results)
+        assert results == self.golf_rounds, f"Expected results to = {self.golf_rounds}"
 
     def test_get_tee_box_invalid_id(self):
         invalid_tee_box_id = IMPOSSIBLY_LARGE_INT
