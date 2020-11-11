@@ -224,9 +224,9 @@ workflows:
       - build-handicap-service:
           context:
             - footwedge
-      - run-integration-handicap-service:
-          context:
-            - footwedge
+#      - run-integration-handicap-service:
+#          context:
+#            - footwedge
       - deploy-handicap-service:
           context:
             - footwedge
