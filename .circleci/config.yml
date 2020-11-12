@@ -121,10 +121,12 @@ jobs:
           command: |
             docker-compose up -d
             docker ps
+            sleep 5
+            docker ps
       - run:
           name: "Run handicap-service integration tests"
           command: |
-            sleep 30
+            sleep 60
             docker ps
             curl http://localhost:8000/api/health
             sh ./lambdas/handicap-service/script/run_integration_tests.sh
