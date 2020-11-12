@@ -116,6 +116,7 @@ jobs:
             python -m venv .venv
             pip install -r ./lambdas/handicap-service/requirements.txt
             pip install -r ./lambdas/handicap-service/requirements-dev.txt
+            pip install -r ./api/requirements.txt
       - run:
           name: "Docker Compose"
           command: |
@@ -125,6 +126,9 @@ jobs:
             AWS_DEFAULT_REGION: us-east-2
             AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      -run:
+          name: Migrate DB
+          command: alembic upgrade head
       - run:
           name: "Run handicap-service integration tests"
           command: |
