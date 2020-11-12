@@ -124,7 +124,8 @@ jobs:
       - run:
           name: "Run handicap-service integration tests"
           command: |
-            sleep 5
+            sleep 30
+            docker ps
             curl http://localhost:8000/api/health
             sh ./lambdas/handicap-service/script/run_integration_tests.sh
           environment:
