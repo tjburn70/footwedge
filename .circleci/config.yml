@@ -128,7 +128,7 @@ jobs:
             AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
       - run:
           name: Migrate DB
-          command: alembic upgrade head
+          command: cd ./api && alembic upgrade head
       - run:
           name: "Run handicap-service integration tests"
           command: |
