@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from lib.models import TeeBox, GolfRound
+from lib.models import TeeBox
 from lib.exceptions import (
     HandicapServiceFailure,
 )
