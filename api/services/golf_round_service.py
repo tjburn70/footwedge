@@ -68,10 +68,11 @@ class GolfRoundService:
     @staticmethod
     def _queue_handicap_calculation(user_id: int):
         payload = json.dumps({"user_id": user_id}, default=str)
-        sqs_client.send_message(
+        sqs_resp = sqs_client.send_message(
             QueueUrl=settings.HANDICAP_QUEUE_URL,
             MessageBody=payload,
         )
+        print(sqs_resp)
 
     def delete(self, _id: int):
         is_deleted = self._golf_round_repo.delete(model_id=_id)
