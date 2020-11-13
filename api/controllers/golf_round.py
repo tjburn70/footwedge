@@ -38,7 +38,6 @@ hole_schema = HoleSchema()
 @jwt_required
 def golf_rounds():
     user_id = get_jwt_identity()
-    print(user_id)
     service = golf_round_service.GolfRoundService(
         repo=golf_round_repo,
         schema=golf_round_schema,
