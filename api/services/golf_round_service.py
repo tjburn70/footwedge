@@ -1,4 +1,5 @@
 import json
+import logging
 from http import HTTPStatus
 
 import boto3
@@ -13,7 +14,8 @@ from api.repositories.golf_round_repository import GolfRoundRepository
 from api.schemas import GolfRoundSchema
 from api.settings import settings
 
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 sqs_client = boto3.client('sqs')
 
 
@@ -53,6 +55,7 @@ class GolfRoundService:
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
         new_round = self._golf_round_repo.create(data=golf_round_data)
+        logger.info(f"Successfully created a new golf round with id: {new_round.id}")
         self._queue_handicap_calculation(user_id=user_id)
 
         golf_round_id = new_round.id
@@ -67,12 +70,13 @@ class GolfRoundService:
 
     @staticmethod
     def _queue_handicap_calculation(user_id: int):
+        logger.info("queueing handicap calculation...")
         payload = json.dumps({"user_id": user_id}, default=str)
         sqs_resp = sqs_client.send_message(
             QueueUrl=settings.HANDICAP_QUEUE_URL,
             MessageBody=payload,
         )
-        print(sqs_resp)
+        logger.info(f"sqs resp: {sqs_resp}")
 
     def delete(self, _id: int):
         is_deleted = self._golf_round_repo.delete(model_id=_id)
