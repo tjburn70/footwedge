@@ -25,12 +25,12 @@ def pytest_configure(config):
     )
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="session")
 def footwedge_api_client():
     return FootwedgeApi()
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="session")
 def golf_club(footwedge_api_client: FootwedgeApi):
     request_body = {
         "name": "Test Golf Club",
@@ -69,84 +69,156 @@ def golf_club(footwedge_api_client: FootwedgeApi):
         print(f"Unable to delete golf_club with id: {golf_club_id}")
 
 
-@pytest.fixture(scope="class")
-def golf_course_factory(footwedge_api_client: FootwedgeApi):
-    golf_course_ids = []
+@pytest.fixture(scope="session")
+def golf_course(footwedge_api_client: FootwedgeApi, golf_club):
+    golf_club_id = golf_club.get('id')
+    request_body = {
+        "name": "Test Golf Course",
+        "num_holes": 18,
+    }
+    method = "post"
+    path = f"/golf-clubs/{golf_club_id}/golf-courses"
+    headers = {"Content-Type": "application/json"}
+    resp = footwedge_api_client.call(
+        method=method,
+        path=path,
+        headers=headers,
+        data=json.dumps(request_body, default=str)
+    )
+    resp.raise_for_status()
+    result = resp.json()['result']
+    golf_course_id = result.get('id')
+    yield result
 
-    def _golf_course_factory(golf_club_id: int):
-        request_body = {
-            "name": "Test Golf Course",
-            "num_holes": 18,
-        }
-        method = "post"
-        path = f"/golf-clubs/{golf_club_id}/golf-courses"
-        headers = {"Content-Type": "application/json"}
-        resp = footwedge_api_client.call(
-            method=method,
-            path=path,
-            headers=headers,
-            data=json.dumps(request_body, default=str)
-        )
-        resp.raise_for_status()
-        result = resp.json()['result']
-        golf_course_ids.append(result.get('id'))
-        return result
-
-    yield _golf_course_factory
-
-    print("Cleaning up golf_course_factory...")
-    for golf_course_id in golf_course_ids:
-        delete_path = f"/golf-courses/{golf_course_id}"
-        del_resp = footwedge_api_client.call(
-            method="delete",
-            path=delete_path,
-        )
-        if del_resp.status_code == 204:
-            print(f"Successfully deleted golf_course with id: {golf_course_id}")
-        else:
-            print(f"Unable to delete golf_course with id: {golf_course_id}")
+    delete_path = f"/golf-courses/{golf_course_id}"
+    del_resp = footwedge_api_client.call(
+        method="delete",
+        path=delete_path,
+    )
+    if del_resp.status_code == 204:
+        print(f"Successfully deleted golf_course with id: {golf_course_id}")
+    else:
+        print(f"Unable to delete golf_course with id: {golf_course_id}")
 
 
-@pytest.fixture(scope="class")
-def tee_box_factory(footwedge_api_client: FootwedgeApi):
-    tee_box_ids = []
+# @pytest.fixture(scope="class")
+# def golf_course_factory(footwedge_api_client: FootwedgeApi):
+#     golf_course_ids = []
+#
+#     def _golf_course_factory(golf_club_id: int):
+#         request_body = {
+#             "name": "Test Golf Course",
+#             "num_holes": 18,
+#         }
+#         method = "post"
+#         path = f"/golf-clubs/{golf_club_id}/golf-courses"
+#         headers = {"Content-Type": "application/json"}
+#         resp = footwedge_api_client.call(
+#             method=method,
+#             path=path,
+#             headers=headers,
+#             data=json.dumps(request_body, default=str)
+#         )
+#         resp.raise_for_status()
+#         result = resp.json()['result']
+#         golf_course_ids.append(result.get('id'))
+#         return result
+#
+#     yield _golf_course_factory
+#
+#     print("Cleaning up golf_course_factory...")
+#     for golf_course_id in golf_course_ids:
+#         delete_path = f"/golf-courses/{golf_course_id}"
+#         del_resp = footwedge_api_client.call(
+#             method="delete",
+#             path=delete_path,
+#         )
+#         if del_resp.status_code == 204:
+#             print(f"Successfully deleted golf_course with id: {golf_course_id}")
+#         else:
+#             print(f"Unable to delete golf_course with id: {golf_course_id}")
 
-    def _tee_box_factory(golf_course_id: int, par: int, course_rating: Decimal, slope: Decimal):
-        request_body = {
-            "tee_color": "Blue",
-            "par": par,
-            "distance": "6305",
-            "unit": "yards",
-            "course_rating": course_rating,
-            "slope": slope,
-        }
-        method = "post"
-        path = f"/golf-courses/{golf_course_id}/tee-boxes"
-        headers = {"Content-Type": "application/json"}
-        resp = footwedge_api_client.call(
-            method=method,
-            path=path,
-            headers=headers,
-            data=json.dumps(request_body, default=str)
-        )
-        resp.raise_for_status()
-        result = resp.json()['result']
-        tee_box_ids.append(result.get('id'))
-        return result
 
-    yield _tee_box_factory
+@pytest.fixture(scope="session")
+def tee_box(footwedge_api_client: FootwedgeApi, golf_course):
+    par = 72
+    course_rating = Decimal(73.5)
+    slope = Decimal(134.0)
+    golf_course_id = golf_course.get('id')
+    request_body = {
+        "tee_color": "Blue",
+        "par": par,
+        "distance": "6305",
+        "unit": "yards",
+        "course_rating": course_rating,
+        "slope": slope,
+    }
+    method = "post"
+    path = f"/golf-courses/{golf_course_id}/tee-boxes"
+    headers = {"Content-Type": "application/json"}
+    resp = footwedge_api_client.call(
+        method=method,
+        path=path,
+        headers=headers,
+        data=json.dumps(request_body, default=str)
+    )
+    resp.raise_for_status()
+    result = resp.json()['result']
+    tee_box_id = result.get('id')
+    yield result
 
     print("Cleaning up tee_box_factory...")
-    for tee_box_id in tee_box_ids:
-        delete_path = f"/golf-courses/tee-boxes/{tee_box_id}"
-        del_resp = footwedge_api_client.call(
-            method="delete",
-            path=delete_path,
-        )
-        if del_resp.status_code == 204:
-            print(f"Successfully deleted tee_box with id: {tee_box_id}")
-        else:
-            print(f"Unable to delete tee_box with id: {tee_box_id}")
+    delete_path = f"/golf-courses/tee-boxes/{tee_box_id}"
+    del_resp = footwedge_api_client.call(
+        method="delete",
+        path=delete_path,
+    )
+    if del_resp.status_code == 204:
+        print(f"Successfully deleted tee_box with id: {tee_box_id}")
+    else:
+        print(f"Unable to delete tee_box with id: {tee_box_id}")
+
+
+# @pytest.fixture(scope="class")
+# def tee_box_factory(footwedge_api_client: FootwedgeApi):
+#     tee_box_ids = []
+#
+#     def _tee_box_factory(golf_course_id: int, par: int, course_rating: Decimal, slope: Decimal):
+#         request_body = {
+#             "tee_color": "Blue",
+#             "par": par,
+#             "distance": "6305",
+#             "unit": "yards",
+#             "course_rating": course_rating,
+#             "slope": slope,
+#         }
+#         method = "post"
+#         path = f"/golf-courses/{golf_course_id}/tee-boxes"
+#         headers = {"Content-Type": "application/json"}
+#         resp = footwedge_api_client.call(
+#             method=method,
+#             path=path,
+#             headers=headers,
+#             data=json.dumps(request_body, default=str)
+#         )
+#         resp.raise_for_status()
+#         result = resp.json()['result']
+#         tee_box_ids.append(result.get('id'))
+#         return result
+#
+#     yield _tee_box_factory
+#
+#     print("Cleaning up tee_box_factory...")
+#     for tee_box_id in tee_box_ids:
+#         delete_path = f"/golf-courses/tee-boxes/{tee_box_id}"
+#         del_resp = footwedge_api_client.call(
+#             method="delete",
+#             path=delete_path,
+#         )
+#         if del_resp.status_code == 204:
+#             print(f"Successfully deleted tee_box with id: {tee_box_id}")
+#         else:
+#             print(f"Unable to delete tee_box with id: {tee_box_id}")
 
 
 @pytest.fixture(scope="class")
@@ -222,7 +294,7 @@ def golf_round_model_factory():
     return _golf_round_model_factory
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="session")
 def golf_round_factory(footwedge_api_client: FootwedgeApi):
     golf_round_ids = []
     auth_headers = {}
