@@ -310,7 +310,7 @@ def golf_round_factory(footwedge_api_client: FootwedgeApi):
         }
 
         method = "post"
-        path = f"/golf-rounds"
+        path = f"/golf-rounds/"
         auth_headers["Authorization"] = f"Bearer {access_token}"
         headers = {
             "Content-Type": "application/json",
