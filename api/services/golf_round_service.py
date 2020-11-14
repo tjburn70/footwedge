@@ -14,7 +14,7 @@ from api.repositories.golf_round_repository import GolfRoundRepository
 from api.schemas import GolfRoundSchema
 from api.settings import settings
 
-logging.basicConfig(level=logging.NOTSET)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 sqs_client = boto3.client('sqs')
