@@ -12,4 +12,4 @@ def lambda_handler(event, context):
         HandicapService(
             footwedge_api_client=FootwedgeApi(),
             user_id=user_id,
-        ).post_handicap()
+        ).add_handicap()

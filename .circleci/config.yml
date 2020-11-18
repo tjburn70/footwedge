@@ -65,25 +65,25 @@ jobs:
   build-handicap-service:
     docker:
       - image: cimg/python:3.7
-      - image: postgres:11.7
-        name: footwedge-db-pg
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: footwedge
-      - image: tjburn70/footwedge:api-latest
-        name: footwedge-api
-        auth:
-          username: tjburn70
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
-          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
-          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
-          REDIS_URI: redis://footwedge-redis/0
-          AWS_DEFAULT_REGION: us-east-2
-          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+#      - image: postgres:11.7
+#        name: footwedge-db-pg
+#        environment:
+#          POSTGRES_USER: postgres
+#          POSTGRES_PASSWORD: postgres
+#          POSTGRES_DB: footwedge
+#      - image: tjburn70/footwedge:api-latest
+#        name: footwedge-api
+#        auth:
+#          username: tjburn70
+#          password: $DOCKERHUB_PASSWORD
+#        environment:
+#          FOOTWEDGE_DATABASE_URI: postgresql://postgres:postgres@footwedge-db-pg/footwedge
+#          SEARCH_SERVICE_API_BASE_URL: http://footwedge-search-api
+#          HANDICAP_QUEUE_URL: https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
+#          REDIS_URI: redis://footwedge-redis/0
+#          AWS_DEFAULT_REGION: us-east-2
+#          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+#          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
     steps:
       - checkout
@@ -94,11 +94,47 @@ jobs:
             pip install -r ./lambdas/handicap-service/requirements.txt
             pip install -r ./lambdas/handicap-service/requirements-dev.txt
       - run:
-          name: Run api unit tests
+          name: Run handicap-service unit tests
           command: |
-            sh ./lambdas/handicap-service/script/run_tests.sh
+            sh ./lambdas/handicap-service/script/run_unit_tests.sh
+          environment:
+            FOOTWEDGE_API_URL: http://footwedge-api:8000/api
+
+  run-integration-handicap-service:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run:
+          name: "Set Python Version"
+          command: |
+            pyenv install -v 3.7.6
+            pyenv global 3.7.6
+      - run:
+          name: Bootstrap virtual environment
+          command: |
+            python -m venv .venv
+            pip install -r ./lambdas/handicap-service/requirements.txt
+            pip install -r ./lambdas/handicap-service/requirements-dev.txt
+            pip install -r ./api/requirements.txt
+      - run:
+          name: "Docker Compose"
+          command: |
+            env > .env
+            docker-compose up -d
           environment:
             FOOTWEDGE_API_URL: http://localhost:8000/api
+            AWS_DEFAULT_REGION: us-east-2
+      - run:
+          name: Migrate DB
+          command: cd ./api && alembic upgrade head
+      - run:
+          name: "Run handicap-service integration tests"
+          command: |
+            sh ./lambdas/handicap-service/script/run_integration_tests.sh
+          environment:
+            FOOTWEDGE_API_URL: http://localhost:8000/api
+            AWS_DEFAULT_REGION: us-east-2
 
   deploy-handicap-service:
     docker:
@@ -144,7 +180,7 @@ jobs:
 #      - run:
 #          name: Run api unit tests
 #          command: |
-#            sh ./lambdas/search-service/script/run_tests.sh
+#            sh ./lambdas/search-service/script/run_unit_tests.sh
 
   deploy-search-service:
     docker:
@@ -192,11 +228,16 @@ workflows:
       - build-handicap-service:
           context:
             - footwedge
+      - run-integration-handicap-service:
+          context:
+            - footwedge
       - deploy-handicap-service:
           context:
             - footwedge
           requires:
             - build-handicap-service
+            - build-api
+            - run-integration-handicap-service
       - build-search-service:
           context:
             - footwedge
@@ -208,4 +249,3 @@ workflows:
       - build-static:
           context:
             - footwedge
-

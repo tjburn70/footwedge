@@ -1,6 +1,10 @@
+from http import HTTPStatus
+
 from flask import (
     Blueprint,
     request,
+    make_response,
+    jsonify,
 )
 from flask_jwt_extended import (
     jwt_required,
@@ -43,6 +47,27 @@ def golf_rounds():
 
     payload = request.get_json()
     return service.add(user_id=user_id, payload=payload)
+
+
+@blueprint.route('/<int:golf_round_id>', methods=['DELETE'])
+@requires_json_content
+@jwt_required
+def delete_golf_round(golf_round_id):
+    user_id = get_jwt_identity()
+    service = golf_round_service.GolfRoundService(
+        repo=golf_round_repo,
+        schema=golf_round_schema,
+    )
+
+    golf_round = golf_round_repo.get(model_id=golf_round_id)
+    if user_id != golf_round.user_id:
+        response_body = {
+            'status': 'fail',
+            'message': f'The user does not own the golf_round with id: {golf_round_id}'
+        }
+        return make_response(jsonify(response_body), HTTPStatus.UNAUTHORIZED.value)
+
+    return service.delete(_id=golf_round_id)
 
 
 @blueprint.route('/<int:user_id>', methods=['GET'])

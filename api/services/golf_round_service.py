@@ -1,4 +1,5 @@
 import json
+import logging
 from http import HTTPStatus
 
 import boto3
@@ -13,6 +14,8 @@ from api.repositories.golf_round_repository import GolfRoundRepository
 from api.schemas import GolfRoundSchema
 from api.settings import settings
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 sqs_client = boto3.client('sqs')
 
@@ -24,8 +27,8 @@ class GolfRoundService:
         self._golf_round_schema = schema
 
     def get(self, _id: int) -> Response:
-        golf_course = self._golf_round_repo.get(_id)
-        result = self._golf_round_schema.dump(golf_course)
+        golf_round = self._golf_round_repo.get(_id)
+        result = self._golf_round_schema.dump(golf_round)
         response_body = {
             'status': 'success',
             'result': result.data
@@ -53,6 +56,7 @@ class GolfRoundService:
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
         new_round = self._golf_round_repo.create(data=golf_round_data)
+        logger.info(f"Successfully created a new golf round with id: {new_round.id}")
         self._queue_handicap_calculation(user_id=user_id)
 
         golf_round_id = new_round.id
@@ -67,8 +71,21 @@ class GolfRoundService:
 
     @staticmethod
     def _queue_handicap_calculation(user_id: int):
+        logger.info("queueing handicap calculation...")
         payload = json.dumps({"user_id": user_id}, default=str)
-        sqs_client.send_message(
+        sqs_resp = sqs_client.send_message(
             QueueUrl=settings.HANDICAP_QUEUE_URL,
             MessageBody=payload,
         )
+        logger.info(f"sqs resp: {sqs_resp}")
+
+    def delete(self, _id: int):
+        is_deleted = self._golf_round_repo.delete(model_id=_id)
+        if not is_deleted:
+            response_body = {
+                'status': 'fail',
+                'message': f'No Golf Round with id: {_id}',
+            }
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+        return make_response("", HTTPStatus.NO_CONTENT.value)

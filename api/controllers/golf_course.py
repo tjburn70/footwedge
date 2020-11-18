@@ -42,14 +42,17 @@ def golf_courses():
     return service.get_all()
 
 
-@blueprint.route('/<int:golf_course_id>', methods=['GET'])
+@blueprint.route('/<int:golf_course_id>', methods=['GET', 'DELETE'])
 @throws_500_on_exception
 def golf_courses_by_id(golf_course_id):
     service = golf_course_service.GolfCourseService(
         repo=golf_course_repo,
         schema=golf_course_schema,
     )
-    return service.get(_id=golf_course_id)
+    if request.method == 'GET':
+        return service.get(_id=golf_course_id)
+    if request.method == 'DELETE':
+        return service.delete(_id=golf_course_id)
 
 
 @blueprint.route('/<int:golf_course_id>/tee-boxes', methods=['GET', 'POST'])
@@ -68,14 +71,17 @@ def tee_boxes(golf_course_id):
 
 
 # TODO: Consider diff controller?
-@blueprint.route('/tee-boxes/<int:tee_box_id>', methods=['GET'])
+@blueprint.route('/tee-boxes/<int:tee_box_id>', methods=['GET', 'DELETE'])
 @throws_500_on_exception
 def tee_box_by_id(tee_box_id):
     service = tee_box_service.TeeBoxService(
         repo=tee_box_repo,
         schema=tee_box_schema,
     )
-    return service.get(_id=tee_box_id)
+    if request.method == 'GET':
+        return service.get(_id=tee_box_id)
+    if request.method == 'DELETE':
+        return service.delete(_id=tee_box_id)
 
 
 @blueprint.route('/<int:golf_course_id>/tee-boxes/<int:tee_box_id>/holes', methods=['GET', 'POST'])

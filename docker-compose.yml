@@ -31,7 +31,7 @@ services:
       discovery.type: single-node
   search-service-api:
     container_name: search-service-api
-    image: footwedge:search-service-api-latest
+    image: tjburn70/footwedge:search-service-api-latest
     build:
       context: ./lambdas/search-service
       dockerfile: Dockerfile
@@ -45,15 +45,18 @@ services:
       - elasticsearch
   footwedge-api:
     container_name: footwedge-api
-    image: footwedge:api-latest
+    image: tjburn70/footwedge:api-latest
     build:
       context: ./api
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - FOOTWEDGE_DATABASE_URI=postgresql://postgres:postgres@footwedge-db-pg/footwedge
-      - SEARCH_SERVICE_API_BASE_URL=http://localhost:8001
+      - SEARCH_SERVICE_API_BASE_URL=http://search-service-api:8001
       - HANDICAP_QUEUE_URL=https://sqs.us-east-2.amazonaws.com/753710783959/HandicapQueue
       - REDIS_URI=redis://footwedge-redis/0
     volumes:
@@ -64,7 +67,7 @@ services:
       - elasticsearch
   footwedge-web-client:
     container_name: footwedge-web-client
-    image: footwedge:web-client-latest
+    image: tjburn70/footwedge:web-client-latest
     build:
       context: ./static
       dockerfile: Dockerfile

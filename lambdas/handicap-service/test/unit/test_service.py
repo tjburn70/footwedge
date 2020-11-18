@@ -1,7 +1,7 @@
 import random
 from decimal import Decimal
 from datetime import datetime
-from unittest.mock import MagicMock
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -15,6 +15,8 @@ from lib.exceptions import (
     HandicapServiceFailure,
     SampleSizeTooSmall,
 )
+
+HANDICAP_SERVICE_IMPORT_PATH = 'lib.service.HandicapService'
 
 
 @pytest.fixture
@@ -153,6 +155,23 @@ class TestHandicapService:
         with pytest.raises(HandicapServiceFailure):
             handicap_service._get_tee_box(tee_box_id=1)
 
+    def test_get_tee_box_none_found(self):
+        mock_footwedge_api_client = MagicMock()
+        mock_response = MagicMock()
+        mock_footwedge_api_client.call.return_value = mock_response
+        mock_response.ok = True
+        response_body = {
+            "result": {},
+        }
+        mock_response.json.return_value = response_body
+
+        handicap_service = HandicapService(
+            footwedge_api_client=mock_footwedge_api_client,
+            user_id=1,
+        )
+        with pytest.raises(HandicapServiceFailure):
+            handicap_service._get_tee_box(tee_box_id=-1)
+
     def test_get_tee_box(self):
         mock_footwedge_api_client = MagicMock()
         mock_response = MagicMock()
@@ -193,7 +212,7 @@ class TestHandicapService:
             course_rating=course_rating,
             slope=slope,
         )
-        print(type(differential))
+
         assert expected_differential == differential, f"Expected the differential to be: {expected_differential}"
 
     def test_determine_sample_size_too_small(self):
@@ -338,12 +357,18 @@ class TestHandicapService:
         assert expected_handicap_index == handicap_index, \
             f"For the differentials: {sorted_score_differentials}, expect a handicap of {expected_handicap_index}"
 
-    def test_post_handicap_not_enough_golf_rounds(self, tee_box, golf_round_factory):
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}.post_handicap")
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}._get_tee_box")
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}._get_golf_rounds")
+    def test_add_handicap_not_enough_golf_rounds(self,
+                                                 mock_get_golf_rounds,
+                                                 mock_get_tee_box,
+                                                 mock_post_handicap,
+                                                 tee_box,
+                                                 golf_round_factory):
         golf_round = golf_round_factory(tee_box_id=tee_box.id)
         mock_footwedge_api_client = MagicMock()
-        mock_get_golf_rounds = MagicMock()
         mock_get_golf_rounds.return_value = [golf_round]
-        mock_get_tee_box = MagicMock()
         mock_get_tee_box.return_value = tee_box
 
         handicap_service = HandicapService(
@@ -353,17 +378,23 @@ class TestHandicapService:
         handicap_service._get_golf_rounds = mock_get_golf_rounds
         handicap_service._get_tee_box = mock_get_tee_box
 
-        handicap_service.post_handicap()
+        handicap_service.add_handicap()
 
-        assert not mock_footwedge_api_client.call.called, \
-            "If not enough golf_rounds for a user, do not expect the footwedge_api to be called"
+        assert not mock_post_handicap.called, \
+            "If not enough golf_rounds for a user, post_handicap should not be called"
 
-    def test_post_handicap(self, tee_box, golf_round_factory):
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}.post_handicap")
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}._get_tee_box")
+    @patch(f"{HANDICAP_SERVICE_IMPORT_PATH}._get_golf_rounds")
+    def test_add_handicap(self,
+                          mock_get_golf_rounds,
+                          mock_get_tee_box,
+                          mock_post_handicap,
+                          tee_box,
+                          golf_round_factory):
         golf_round = golf_round_factory(tee_box_id=tee_box.id)
         mock_footwedge_api_client = MagicMock()
-        mock_get_golf_rounds = MagicMock()
         mock_get_golf_rounds.return_value = [golf_round, golf_round, golf_round, golf_round, golf_round]
-        mock_get_tee_box = MagicMock()
         mock_get_tee_box.return_value = tee_box
 
         handicap_service = HandicapService(
@@ -373,7 +404,7 @@ class TestHandicapService:
         handicap_service._get_golf_rounds = mock_get_golf_rounds
         handicap_service._get_tee_box = mock_get_tee_box
 
-        handicap_service.post_handicap()
+        handicap_service.add_handicap()
 
-        assert mock_footwedge_api_client.call.called, \
-            "If > 5 golf_rounds for a user, we expect the footwedge_api to be called"
+        assert mock_post_handicap.called, \
+            "If > 5 golf_rounds for a user, we expect post_handicap to be called"

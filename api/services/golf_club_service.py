@@ -46,15 +46,28 @@ class GolfClubService:
             }
             return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
 
-        golf_club = self._golf_club_repo.create(data=golf_club_data)
+        golf_club_model = self._golf_club_repo.create(data=golf_club_data)
+        golf_club = self._golf_club_schema.dump(golf_club_model).data
         # TODO: Is this the best way, maybe make an async future
         SearchService.add_golf_club(
-            golf_club_id=golf_club.id,
-            payload=self._golf_club_schema.dump(golf_club).data
+            golf_club_id=golf_club_model.id,
+            payload=golf_club,
         )
         response_body = {
             'status': 'success',
-            'message': f"Golf Club: '{golf_club.name}' was successfully added",
-            'uri': f'api/golf-clubs/{golf_club.id}',
+            'message': f"Golf Club: '{golf_club_model.name}' was successfully added",
+            'result': golf_club,
+            'uri': f'api/golf-clubs/{golf_club_model.id}',
         }
         return make_response(jsonify(response_body), HTTPStatus.OK.value)
+
+    def delete(self, _id: int):
+        is_deleted = self._golf_club_repo.delete(model_id=_id)
+        if not is_deleted:
+            response_body = {
+                'status': 'fail',
+                'message': f'No Golf Club with id: {_id}',
+            }
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+
+        return make_response("", HTTPStatus.NO_CONTENT.value)

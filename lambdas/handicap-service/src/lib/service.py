@@ -1,4 +1,5 @@
 import json
+import logging
 from decimal import Decimal
 from typing import List
 
@@ -12,6 +13,9 @@ from lib.exceptions import (
     HandicapServiceFailure,
 )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+
 
 class HandicapService:
 
@@ -24,10 +28,14 @@ class HandicapService:
         resp = self.footwedge_api_client.call(method="get", path=path)
         if not resp.ok:
             error_message = f"status_code: '{resp.status_code}' reason: '{resp.text}'"
-            print(error_message)
+            logger.error(error_message)
             raise HandicapServiceFailure(error_message)
 
         results = resp.json().get('result')
+        if not results:
+            error_message = f"The user_id: {self.user_id} does not have any golf_round records"
+            logger.error(error_message)
+            raise HandicapServiceFailure(error_message)
         golf_rounds = [GolfRound(**result) for result in results]
         return golf_rounds
 
@@ -36,10 +44,13 @@ class HandicapService:
         resp = self.footwedge_api_client.call(method="get", path=path)
         if not resp.ok:
             error_message = f"status_code: '{resp.status_code}' reason: '{resp.text}'"
-            print(error_message)
+            logger.error(error_message)
             raise HandicapServiceFailure(error_message)
 
         result = resp.json().get('result')
+        if not result:
+            error_message = f"No tee-box with id: {tee_box_id}"
+            raise HandicapServiceFailure(error_message)
         return TeeBox(**result)
 
     @staticmethod
@@ -80,11 +91,19 @@ class HandicapService:
             differentials=differentials,
         )
         handicap_index = (sum(lowest_differentials) / len(lowest_differentials)) * Decimal('0.96')
-        print(handicap_index)
-        print(type(handicap_index))
         return round(handicap_index, 1)
 
-    def post_handicap(self):
+    def post_handicap(self, handicap_index: Decimal):
+        data = {"index": handicap_index, "authorized_association": "USGA"}
+        handicap_path = f"/handicaps/{self.user_id}"
+        return self.footwedge_api_client.call(
+            method="post",
+            path=handicap_path,
+            json=json.loads(json.dumps(data, default=str)),
+            headers={"Content-Type": "application/json"},
+        )
+
+    def add_handicap(self):
         ordered_golf_rounds = self._get_golf_rounds()
         if len(ordered_golf_rounds) > 20:
             golf_rounds = ordered_golf_rounds[:20]
@@ -104,14 +123,15 @@ class HandicapService:
         try:
             handicap_index = self.calculate_handicap_index(differentials=differentials)
         except (SampleSizeTooSmall, HandicapServiceFailure) as exc:
-            print(exc)
+            logger.exception(exc)
             return
 
-        data = {"index": handicap_index, "authorized_association": "USGA"}
-        handicap_path = f"/handicaps/{self.user_id}"
-        self.footwedge_api_client.call(
-            method="post",
-            path=handicap_path,
-            json=json.loads(json.dumps(data, default=str)),
-            headers={"Content-Type": "application/json"},
-        )
+        resp = self.post_handicap(handicap_index=handicap_index)
+        if resp.ok:
+            success_message = f"Successfully calculated and added a new handicap: {handicap_index} " \
+                              f"for user: {self.user_id}"
+            logger.info(success_message)
+        else:
+            failure_message = f"Unable to post handicap for user: {self.user_id} \n" \
+                              f"Reason: {resp.text}"
+            logger.info(failure_message)
