@@ -16,35 +16,6 @@ IMPOSSIBLY_LARGE_INT = 10000000000000000000
 @pytest.mark.integration
 class TestHandicapService:
 
-    # @classmethod
-    # @pytest.fixture(autouse=True)
-    # def setup_class(cls, golf_club, golf_course_factory, tee_box_factory, user, footwedge_api_client):
-    #     cls.golf_club_id = golf_club.get('id')
-    #
-    #     cls.golf_course_data = golf_course_factory(golf_club_id=cls.golf_club_id)
-    #     cls.golf_course_id = cls.golf_course_data.get('id')
-    #
-    #     cls.par = 72
-    #     cls.course_rating = Decimal(73.5)
-    #     cls.slope = Decimal(134.0)
-    #     cls.tee_box_data = tee_box_factory(
-    #         golf_course_id=cls.golf_course_id,
-    #         par=cls.par,
-    #         course_rating=cls.course_rating,
-    #         slope=cls.slope,
-    #     )
-    #     cls.tee_box_id = cls.tee_box_data.get('id')
-    #
-    #     cls.user_id = user.get('user_id')
-    #     cls.access_token = user.get('access_token')
-    #     cls.refresh_token = user.get('refresh_token')
-    #
-    #     cls.footwedge_api_client = footwedge_api_client
-    #     cls.handicap_service = HandicapService(
-    #         footwedge_api_client=footwedge_api_client,
-    #         user_id=cls.user_id,
-    #     )
-
     def test_get_golf_rounds_user_no_golf_rounds(self, footwedge_api_client):
         invalid_user_id = IMPOSSIBLY_LARGE_INT
         handicap_svc = HandicapService(
