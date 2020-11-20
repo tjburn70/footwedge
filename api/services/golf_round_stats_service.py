@@ -50,8 +50,8 @@ class GolfRoundStatsService:
                 return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
             round_stats.append(round_stat_data)
 
-        self._golf_round_stats_repo.bulk_create(records=round_stats)
-        results = self._golf_round_stats_schema.dump(round_stats, many=True)
+        new_stats = self._golf_round_stats_repo.bulk_create(records=round_stats)
+        results = self._golf_round_stats_schema.dump(new_stats, many=True)
         message = f"GolfRoundStats records were successfully added for GolfRound id: '{golf_round_id}'"
         response_body = {
             'status': 'success',
