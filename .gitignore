@@ -4,6 +4,6 @@
 /postgres-data
 /redis-data
 /es-data
-static/node_modules
+/static/node_modules/
 '/static/package-lock.json'
 **/__pycache__
