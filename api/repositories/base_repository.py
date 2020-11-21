@@ -31,7 +31,7 @@ class BaseRepository:
         model_objs = [self.model(**record) for record in records]
         self.db_session.add_all(model_objs)
         self.db_session.commit()
-        return [model_obj.id for model_obj in model_objs]
+        return model_objs
 
     def update(self, data: dict):
         model_obj = self.model(**data)
