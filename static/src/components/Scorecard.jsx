@@ -100,13 +100,13 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
           <TableRow key="hole_number">
             <TableCell>Hole</TableCell>
             {frontNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.holeNumber}
               </TableCell>
             ))}
             <TableCell>OUT</TableCell>
             {backNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.holeNumber}
               </TableCell>
             ))}
@@ -116,13 +116,13 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
           <TableRow key="distance">
             <TableCell>{teeBoxInfo()}</TableCell>
             {frontNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.distance}
               </TableCell>
             ))}
             <TableCell>{frontNineYardage}</TableCell>
             {backNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.distance}
               </TableCell>
             ))}
@@ -134,13 +134,13 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
           <TableRow key="handicap">
             <TableCell>Handicap</TableCell>
             {frontNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.handicap}
               </TableCell>
             ))}
             <TableCell></TableCell>
             {backNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.handicap}
               </TableCell>
             ))}
@@ -150,13 +150,13 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
           <TableRow key="par">
             <TableCell>Par</TableCell>
             {frontNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.par}
               </TableCell>
             ))}
             <TableCell>{frontNinePar}</TableCell>
             {backNine.map((hole) => (
-              <TableCell key={hole.holeNumber}>
+              <TableCell key={hole.holeNumber} align="center">
                 {hole.par}
               </TableCell>
             ))}
