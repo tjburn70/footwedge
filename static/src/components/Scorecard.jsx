@@ -30,14 +30,15 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
       const url = new URL(path, URL_ROOT);
       axios.get(url)
         .then(res => {
-          holes = res.data.result.map((hole) => ({
-            holeId: hole.id,
-            holeNumber: hole.hole_number,
-            distance: hole.distance,
-            handicap: hole.handicap,
-            par: hole.par,
-          }));
-          setHoles(holes);
+          setHoles(
+            res.data.result.map((hole) => ({
+              holeId: hole.id,
+              holeNumber: hole.hole_number,
+              distance: hole.distance,
+              handicap: hole.handicap,
+              par: hole.par,
+            }))
+          );
         })
         .catch(error => {
           console.log(error);
