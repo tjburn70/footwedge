@@ -175,6 +175,7 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
                   round={round}
                   stat={statsByHoleId[hole.holeId]}
                   holeId={hole.holeId}
+                  par={hole.par}
                   dispatch={dispatch}
                 />
               </TableCell>
@@ -186,6 +187,7 @@ export default function Scorecard({ round, statsByHoleId, teeBox, golfCourse, di
                   round={round}
                   stat={statsByHoleId[hole.holeId]}
                   holeId={hole.holeId}
+                  par={hole.par}
                   dispatch={dispatch}
                 />
               </TableCell>
