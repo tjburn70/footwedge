@@ -33,11 +33,9 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-    marginLeft: 0,
-    marginRight: 900,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
+      marginLeft: theme.spacing(2),
       width: 'auto',
     },
   },
@@ -66,6 +64,15 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  loginButton: {
+    marginLeft: '60%',
+    color: 'inherit',
+  },
+  registerButton: {
+    float: 'right',
+    marginLeft: '6px',
+    
+  },
 }));
 
 export const NavBar = ({ isAuthenticated, dispatch }) => {
@@ -77,9 +84,23 @@ export const NavBar = ({ isAuthenticated, dispatch }) => {
       );
     } else {
       return (
-        <Button color="inherit" component={Link} to="/login">
-            Login
-        </Button>
+        <>
+          <Button 
+            className={classes.loginButton} 
+            component={Link} 
+            to="/login"
+          >
+              Login
+          </Button>
+          <Button 
+            className={classes.registerButton} 
+            color="secondary"
+            component={Link} 
+            to="/register"
+          >
+            Register
+          </Button>
+        </>
       );
     }
   }
@@ -114,9 +135,6 @@ export const NavBar = ({ isAuthenticated, dispatch }) => {
             />
           </div>
           {renderButton()}
-          <Button color="secondary" component={Link} to="/register">
-            Register
-          </Button>
         </Toolbar>
       </AppBar>
     </div>
