@@ -1,17 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import clsx from 'clsx';
 import { Link } from 'react-router-dom';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
-import { fade, makeStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SearchIcon from '@material-ui/icons/Search';
 import GolfCourseIcon from '@material-ui/icons/GolfCourse';
 import { logoutUser } from '../actions/api';
 import { Logout } from './Logout';
+import { MenuOptionsData } from './MenuOptionsData';
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,9 +69,9 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      width: '12ch',
+      width: '16ch',
       '&:focus': {
-        width: '20ch',
+        width: '24ch',
       },
     },
   },
@@ -71,12 +82,34 @@ const useStyles = makeStyles((theme) => ({
   registerButton: {
     float: 'right',
     marginLeft: '6px',
-    
+  },
+  hide: {
+    display: 'none',
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
   },
 }));
 
 export const NavBar = ({ isAuthenticated, dispatch }) => {
   const classes = useStyles();
+  const [open, setOpen] = useState(false); // defaulting as closed
+  const showOptions = () => {
+      setOpen(!open);
+  }
+
   const renderButton = () => {
     if (isAuthenticated) {
       return (
@@ -111,9 +144,10 @@ export const NavBar = ({ isAuthenticated, dispatch }) => {
         <Toolbar>
           <IconButton
             edge="start"
-            className={classes.menuButton}
             color="inherit"
             aria-label="open drawer"
+            onClick={showOptions}
+            className={clsx(classes.menuButton, open && classes.hide)}
           >
             <MenuIcon />
           </IconButton>
@@ -137,6 +171,37 @@ export const NavBar = ({ isAuthenticated, dispatch }) => {
           {renderButton()}
         </Toolbar>
       </AppBar>
+      <Drawer
+        className={classes.drawer}
+        variant="persistent"
+        anchor="left"
+        open={open}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={showOptions}>
+              <ChevronLeftIcon />
+          </IconButton>
+        </div>
+        <Divider />
+        <List>
+          {MenuOptionsData.map((item, index) => (    
+            <ListItem 
+              buttom 
+              key={index}
+              component={Link}
+              to={item.path}
+            >
+              <ListItemIcon>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.title} />
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
     </div>
   );
 }
