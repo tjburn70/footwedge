@@ -1,9 +1,9 @@
 .venv
 .idea/*
 .DS_Store
-/postgres-data
-/redis-data
-/es-data
-static/node_modules
+postgres-data/
+redis-data/
+es-data/
+static/node_modules/
 '/static/package-lock.json'
 **/__pycache__

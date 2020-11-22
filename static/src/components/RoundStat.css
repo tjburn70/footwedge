@@ -1,0 +1,14 @@
+.birdie {
+    width: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    border: 1.5px solid #000;
+}
+
+.bogey {
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    border: 1.5px solid #000;
+}

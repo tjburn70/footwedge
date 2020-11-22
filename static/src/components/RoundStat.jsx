@@ -10,9 +10,17 @@ import EditIcon from '@material-ui/icons/Edit';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { addRoundStat } from '../actions/api';
+import './RoundStat.css';
 
+const relativeScoreToClassName = {
+  "-2": "eagle",
+  "-1": "birdie",
+  "0": "par",
+  "1": "bogey",
+  "2": "double-bogey",
+}
 
-export default function RoundStat({ round, stat, holeId, dispatch }) {
+export default function RoundStat({ round, stat, holeId, par, dispatch }) {
   const [open, setOpen] = React.useState(false);
   const [score, setScore] = React.useState('');
   const [fairwayHit, setFairwayHit] = React.useState(false);
@@ -44,11 +52,18 @@ export default function RoundStat({ round, stat, holeId, dispatch }) {
     setOpen(false);
   }
 
+  const getScoreStyle = () => {
+    const delta = stat.gross_score - par;
+    return relativeScoreToClassName[delta.toString()];
+  }
+
   const display = () => {
     if (typeof stat !== 'undefined') {
       return (
         <Button onClick={handleClickOpen} size='small'>
-          {stat.gross_score}
+          <div className={getScoreStyle()}>
+            {stat.gross_score}
+          </div>
         </Button>
       );
     } else {
