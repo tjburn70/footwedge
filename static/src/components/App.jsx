@@ -11,7 +11,6 @@ import { Dashboard } from './Dashboard';
 import { GolfRounds } from './GolfRounds';
 import { EnterRound } from './EnterRound';
 import { InfoPage } from './InfoPage';
-import { MenuOptions } from './MenuOptions';
 
 
 class App extends React.Component {
@@ -39,7 +38,6 @@ class App extends React.Component {
       <div>
         <div>
           <NavBar isAuthenticated={auth.isAuthenticated} dispatch={dispatch}/>
-          <MenuOptions />
           <Switch>
             <Route path="/login">
               <Login
