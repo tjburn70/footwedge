@@ -1,45 +1,32 @@
 Footwedge
 =======================================================
 
-Dockerized Web-App to record golf rounds, track handicap,
-set golf goals, and search golf courses
+Dockerized web app to record Record golf rounds, keep stats, and track your handicap.
 
 ## Getting Started
 
 * Install Docker 
-* Build Docker images
-* Setup database
 * Run docker-compose up
-
+* Migrate database
 
 ### Prerequisites
 * Docker
 
-
 ### Setup
 
-
-1) Build the Footwedge api and client Docker images:
-
-    api:
-     * ```docker build --file Dockerfile-api --tag footwedge-api:latest . ```
-    
-    client:
-     * ```docker build --file Dockerfile-client --tag footwedge-client:latest . ```
+1) From the project root execute: ```docker-compose up```, this should build the necessary images if they don't already exist and start your containers. In the future you can rebuild images by navigating to the service directory and running ``` ./script/build_image.sh```
      
-2) Initialize the Footwedge db models:
+2) Migrate database:
 
-    * ```export FLASK_APP=index```
-    * ```flask db upgrade```
-
-3) Launch Containers!
-    
-    * ```docker-compose up```
+    * ```alembic upgrade head```
     
   
 ## Running the tests
 
-* TBD
+* handicap-service 
+    * unit: ``` ./script/run_unit_tests.sh```
+    * integration: ```./script/run_integration_tests.sh```
+        **Note**: This requires docker containers to be running locally
 
 
 ## Built With
@@ -53,8 +40,5 @@ set golf goals, and search golf courses
 * SQLAlchemy
 * Alembic
 * React, Redux, React-Router
-
-
-## Features To Come
-* Book tee-times
-* Mobile client!
+* serverless
+* AWS Lambda, SQS
