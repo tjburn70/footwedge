@@ -23,31 +23,31 @@ class GolfClubService:
         result = self._golf_club_schema.dump(golf_club)
         response_body = {
             'status': 'success',
-            'result': result.data
+            'result': result
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_all(self) -> Response:
         clubs = self._golf_club_repo.get_all()
         results = self._golf_club_schema.dump(clubs, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data
+            'result': results
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def add(self, payload: dict) -> Response:
         try:
-            golf_club_data = self._golf_club_schema.load(payload).data
+            golf_club_data = self._golf_club_schema.load(payload)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
                 'message': e.messages
             }
-            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY)
 
         golf_club_model = self._golf_club_repo.create(data=golf_club_data)
-        golf_club = self._golf_club_schema.dump(golf_club_model).data
+        golf_club = self._golf_club_schema.dump(golf_club_model)
         # TODO: Is this the best way, maybe make an async future
         SearchService.add_golf_club(
             golf_club_id=golf_club_model.id,
@@ -59,7 +59,7 @@ class GolfClubService:
             'result': golf_club,
             'uri': f'api/golf-clubs/{golf_club_model.id}',
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def delete(self, _id: int):
         is_deleted = self._golf_club_repo.delete(model_id=_id)
@@ -68,6 +68,6 @@ class GolfClubService:
                 'status': 'fail',
                 'message': f'No Golf Club with id: {_id}',
             }
-            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST)
 
-        return make_response("", HTTPStatus.NO_CONTENT.value)
+        return make_response("", HTTPStatus.NO_CONTENT)
