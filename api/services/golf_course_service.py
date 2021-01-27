@@ -57,7 +57,7 @@ class GolfCourseService:
 
     def add(self, payload: dict) -> Response:
         try:
-            golf_course_data = self._golf_course_schema.load(payload).data
+            golf_course_data = self._golf_course_schema.load(payload)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
