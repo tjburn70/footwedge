@@ -52,6 +52,7 @@ def golf_clubs_by_id(golf_club_id):
 
 
 @blueprint.route('/<int:golf_club_id>/golf-courses', methods=['GET', 'POST'])
+@requires_json_content
 @throws_500_on_exception
 def golf_courses(golf_club_id):
     service = golf_course_service.GolfCourseService(
