@@ -57,7 +57,7 @@ def blue_tee_box(tee_box_id, golf_course_id):
         par=72,
         distance=7150,
         unit="yards",
-        course_rating=135.8,
+        course_rating=74.1,
         slope=144.0,
         created_ts=datetime.now(),
         touched_ts=None,
@@ -66,7 +66,7 @@ def blue_tee_box(tee_box_id, golf_course_id):
 
 
 @pytest.fixture
-def golf_course(golf_course_id, golf_club_id, blue_tee_box):
+def golf_course_model(golf_course_id, golf_club_id, blue_tee_box):
     return GolfCourse(
         id=golf_course_id,
         golf_club_id=golf_club_id,
@@ -79,7 +79,7 @@ def golf_course(golf_course_id, golf_club_id, blue_tee_box):
 
 
 @pytest.fixture
-def random_golf_club_model_with_golf_course(golf_club_id, golf_course):
+def random_golf_club_model_with_golf_course(golf_club_id, golf_course_model):
     return GolfClub(
         id=golf_club_id,
         name="Prestigious Golf Club",
@@ -91,7 +91,7 @@ def random_golf_club_model_with_golf_course(golf_club_id, golf_course):
         email="champions_club@gmail.com",
         created_ts=datetime.now(),
         touched_ts=None,
-        golf_courses=[golf_course],
+        golf_courses=[golf_course_model],
     )
 
 
@@ -111,3 +111,115 @@ def golf_club_dict():
 @pytest.fixture
 def golf_club_model_no_golf_course(golf_club_dict):
     return GolfClub(id=-1, **golf_club_dict)
+
+
+@pytest.fixture
+def golf_course_post_body():
+    return {
+        'name': 'A Wonderful Course',
+        'num_holes': 18,
+    }
+
+
+@pytest.fixture
+def olympia_fields_golf_club_id():
+    return 2
+
+
+@pytest.fixture
+def olympia_fields_north_course_id():
+    return 2
+
+
+@pytest.fixture
+def olympia_fields_south_course_id():
+    return 3
+
+
+@pytest.fixture
+def olympia_fields_north_black_tee_box(olympia_fields_north_course_id):
+    return TeeBox(
+        id=2,
+        golf_course_id=olympia_fields_north_course_id,
+        tee_color="Black",
+        par=70,
+        distance=7273,
+        unit="yards",
+        course_rating=76.6,
+        slope=150.0,
+        created_ts=datetime.now(),
+        touched_ts=None,
+        golf_holes=[],
+    )
+
+
+@pytest.fixture
+def olympia_fields_south_black_tee_box(olympia_fields_south_course_id):
+    return TeeBox(
+        id=3,
+        golf_course_id=olympia_fields_south_course_id,
+        tee_color="Black",
+        par=71,
+        distance=7106,
+        unit="yards",
+        course_rating=75.0,
+        slope=146.0,
+        created_ts=datetime.now(),
+        touched_ts=None,
+        golf_holes=[],
+    )
+
+
+@pytest.fixture
+def olympia_fields_north_course(
+        olympia_fields_north_course_id,
+        olympia_fields_golf_club_id,
+        olympia_fields_north_black_tee_box,
+):
+    return GolfCourse(
+        id=olympia_fields_north_course_id,
+        golf_club_id=olympia_fields_golf_club_id,
+        name="Olympia Fields CC - North",
+        num_holes=18,
+        created_ts=datetime.now(),
+        touched_ts=None,
+        tee_boxes=[olympia_fields_north_black_tee_box]
+    )
+
+
+@pytest.fixture
+def olympia_fields_south_course(
+        olympia_fields_south_course_id,
+        olympia_fields_golf_club_id,
+        olympia_fields_south_black_tee_box,
+):
+    return GolfCourse(
+        id=olympia_fields_south_course_id,
+        golf_club_id=olympia_fields_golf_club_id,
+        name="Olympia Fields CC - South",
+        num_holes=18,
+        created_ts=datetime.now(),
+        touched_ts=None,
+        tee_boxes=[olympia_fields_south_black_tee_box]
+    )
+
+
+@pytest.fixture
+def olympia_fields(
+        olympia_fields_golf_club_id,
+        olympia_fields_north_course,
+        olympia_fields_south_course,
+):
+    return GolfClub(
+        id=olympia_fields_golf_club_id,
+        name="Olympia Fields Country Club",
+        address="2800 Country Club Dr",
+        city="Olympia Fields",
+        state_code="IL",
+        zip_code="60461",
+        phone_number="708-748-0495",
+        email="",
+        created_ts=datetime.now(),
+        touched_ts=None,
+        golf_courses=[olympia_fields_north_course, olympia_fields_south_course],
+    )
