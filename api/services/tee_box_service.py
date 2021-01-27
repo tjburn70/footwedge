@@ -22,41 +22,41 @@ class TeeBoxService:
         result = self._tee_box_schema.dump(tee_box)
         response_body = {
             'status': 'success',
-            'result': result.data
+            'result': result
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_all(self) -> Response:
         tee_boxes = self._tee_box_repo.get_all()
         results = self._tee_box_schema.dump(tee_boxes, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data
+            'result': results
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_by_golf_course_id(self, golf_course_id: int):
         tee_boxes = self._tee_box_repo.get_by_golf_course_id(golf_course_id=golf_course_id)
         results = self._tee_box_schema.dump(tee_boxes, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data
+            'result': results
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def add(self, golf_course_id: int, payload: dict) -> Response:
         payload['golf_course_id'] = golf_course_id
         try:
-            tee_box_data = self._tee_box_schema.load(payload).data
+            tee_box_data = self._tee_box_schema.load(payload)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
                 'message': e.messages
             }
-            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY)
 
         tee_box_model = self._tee_box_repo.create(data=tee_box_data)
-        tee_box = self._tee_box_schema.dump(tee_box_model).data
+        tee_box = self._tee_box_schema.dump(tee_box_model)
         tee_box_id = tee_box_model.id
         response_body = {
             'status': 'success',
@@ -64,7 +64,7 @@ class TeeBoxService:
             'result': tee_box,
             'uri': f'/api/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}',
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def delete(self, _id: int):
         is_deleted = self._tee_box_repo.delete(model_id=_id)
@@ -73,6 +73,6 @@ class TeeBoxService:
                 'status': 'fail',
                 'message': f'No Tee Box with id: {_id}',
             }
-            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST)
 
-        return make_response("", HTTPStatus.NO_CONTENT.value)
+        return make_response("", HTTPStatus.NO_CONTENT)

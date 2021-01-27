@@ -23,27 +23,27 @@ class HoleService:
         result = self._hole_schema.dump(hole)
         response_body = {
             'status': 'success',
-            'result': result.data
+            'result': result
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_all(self) -> Response:
         holes = self._hole_repo.get_all()
         results = self._hole_schema.dump(holes, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data
+            'result': results
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_by_tee_box_id(self, tee_box_id: int):
         holes = self._hole_repo.get_by_tee_box_id(tee_box_id=tee_box_id)
         results = self._hole_schema.dump(holes, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data
+            'result': results
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def add(self, golf_course_id: int, tee_box_id: int, payload: dict):
         if not payload.get('holes'):
@@ -51,21 +51,21 @@ class HoleService:
                 'status': 'fail',
                 'message': "RequestBody is missing required parameter: 'holes'"
             }
-            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST)
 
         holes_data = []
         for hole in payload.get('holes'):
             hole['golf_course_id'] = golf_course_id
             hole['tee_box_id'] = tee_box_id
             try:
-                hole_data = self._hole_schema.load(hole).data
+                hole_data = self._hole_schema.load(hole)
                 holes_data.append(hole_data)
             except ValidationError as e:
                 response_body = {
                     'status': 'fail',
                     'message': e.messages
                 }
-                return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+                return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY)
 
         self._hole_repo.bulk_create(records=holes_data)
         message = "Hole records were successfully added for " \
@@ -75,7 +75,7 @@ class HoleService:
             'message': message,
             'uri': f'/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}/holes/',
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def map_hole_ids_to_par(self, hole_ids: List[int]) -> dict:
         holes = self._hole_repo.get_by_ids(ids=hole_ids)

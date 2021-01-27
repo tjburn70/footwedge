@@ -25,9 +25,9 @@ class GolfRoundStatsService:
         results = self._golf_round_stats_schema.dump(rounds, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data,
+            'result': results,
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def add(self, golf_round_id: int, payload: dict) -> Response:
         if not payload.get('round_stats'):
@@ -35,19 +35,19 @@ class GolfRoundStatsService:
                 'status': 'fail',
                 'message': "Request is missing required parameter: 'round_stats'"
             }
-            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST)
 
         round_stats = []
         for hole_stat in payload['round_stats']:
             hole_stat['golf_round_id'] = golf_round_id
             try:
-                round_stat_data = self._golf_round_stats_schema.load(hole_stat).data
+                round_stat_data = self._golf_round_stats_schema.load(hole_stat)
             except ValidationError as e:
                 response_body = {
                     'status': 'fail',
                     'message': e.messages
                 }
-                return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+                return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY)
             round_stats.append(round_stat_data)
 
         new_stats = self._golf_round_stats_repo.bulk_create(records=round_stats)
@@ -57,9 +57,9 @@ class GolfRoundStatsService:
             'status': 'success',
             'message': message,
             'uri': f'/golf-rounds/{golf_round_id}/golf-round-stats',
-            'result': results.data,
+            'result': results,
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     @staticmethod
     def calculate_stats_summary(stats: List[GolfRoundStats], hole_ids_to_par: dict) -> dict:
@@ -107,4 +107,4 @@ class GolfRoundStatsService:
             'uri': f'/golf-round-stats/summary',
             'result': data,
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)

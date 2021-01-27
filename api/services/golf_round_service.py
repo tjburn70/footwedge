@@ -31,29 +31,29 @@ class GolfRoundService:
         result = self._golf_round_schema.dump(golf_round)
         response_body = {
             'status': 'success',
-            'result': result.data
+            'result': result
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def get_by_user_id(self, user_id: int) -> Response:
         rounds = self._golf_round_repo.get_by_user_id(user_id=user_id)
         results = self._golf_round_schema.dump(rounds, many=True)
         response_body = {
             'status': 'success',
-            'result': results.data,
+            'result': results,
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     def add(self, user_id: int, payload: dict) -> Response:
         payload['user_id'] = user_id
         try:
-            golf_round_data = self._golf_round_schema.load(payload).data
+            golf_round_data = self._golf_round_schema.load(payload)
         except ValidationError as e:
             response_body = {
                 'status': 'fail',
                 'message': e.messages
             }
-            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY.value)
+            return make_response(jsonify(response_body), HTTPStatus.UNPROCESSABLE_ENTITY)
 
         new_round = self._golf_round_repo.create(data=golf_round_data)
         logger.info(f"Successfully created a new golf round with id: {new_round.id}")
@@ -64,10 +64,10 @@ class GolfRoundService:
         response_body = {
             'status': 'success',
             'message': f"GolfRound: '{golf_round_id}' was successfully added for user_id: '{user_id}'",
-            'result': result.data,
+            'result': result,
             'uri': f'/golf-rounds/{golf_round_id}',
         }
-        return make_response(jsonify(response_body), HTTPStatus.OK.value)
+        return make_response(jsonify(response_body), HTTPStatus.OK)
 
     @staticmethod
     def _queue_handicap_calculation(user_id: int):
@@ -86,6 +86,6 @@ class GolfRoundService:
                 'status': 'fail',
                 'message': f'No Golf Round with id: {_id}',
             }
-            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST.value)
+            return make_response(jsonify(response_body), HTTPStatus.BAD_REQUEST)
 
-        return make_response("", HTTPStatus.NO_CONTENT.value)
+        return make_response("", HTTPStatus.NO_CONTENT)
